@@ -129,7 +129,7 @@ def manage_job():
 # Manage Models
 @app.route('/models', methods=['GET', 'POST'])
 def manage_model():
-    model_dict = list_model_dir()
+   model_dict = list_model_dir()
     for ele in model_dict:
         if not os.listdir(os.path.join(os.getcwd(), 'static/model', model_dict[ele])):
             del model_dict[ele]

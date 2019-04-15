@@ -1,0 +1,140 @@
+swagger: "2.0"
+info:
+  description: "HTTP API for okralact training server"
+  version: "1.0.0"
+  title: "ocralakt API"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "unixprog@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "okralact.ocr-d.de"
+basePath: "/v1"
+tags:
+- name: "data"
+  description: "Uploading/retrieving data"
+  externalDocs:
+    description: "orkalact Documentation"
+    url: "http://ocr-d.github.io/okralact"
+- name: "tasks"
+  description: "Operations with data"
+  externalDocs:
+    description: "orkalact Documentation"
+    url: "http://ocr-d.github.io/okralact"
+schemes:
+- "https"
+- "http"
+paths:
+
+  /data:
+    post:
+      tags:
+      - "data"
+      summary: "Upload files"
+      description: ""
+      operationId: "addFile"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "archive"
+        in: "formData"
+        description: "Archive to upload"
+        required: true
+        type: "file"
+      responses:
+        200:
+          description: "File uploaded"
+
+  /configs:
+    post:
+      tags:
+      - "data"
+      summary: "Upload configuration files"
+      description: ""
+      operationId: "addConfig"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "archive"
+        in: "formData"
+        description: "Config to upload"
+        required: true
+        type: "file"
+      responses:
+        200:
+          description: "Config uploaded"
+
+  /delete_config/{fileId}:
+    post:
+      tags:
+        - data
+      summary: "Delete config"
+      operationId: "deleteConfig"
+      parameters:
+        - name: "fileId"
+          in: "path"
+          type: "string"
+          required: true
+
+
+  /delete_data/{fileId}:
+    post:
+      tags:
+        - data
+      summary: "Delete files"
+      operationId: "deleteData"
+      parameters:
+        - name: "fileId"
+          in: "path"
+          type: "string"
+          required: true
+
+
+  /jobs:
+    post:
+      tags:
+      - "tasks"
+      summary: "Post a new training job"
+      description: ""
+      operationId: "createTrainingJob"
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "select_train"
+        in: "formData"
+        type: "string"
+        description: "Ground truth for training"
+        required: true
+      - name: "select_test"
+        in: "formData"
+        type: "string"
+        description: "Ground truth for evaluation"
+        required: true
+      - name: "select_config"
+        in: "formData"
+        type: "string"
+        description: "Config for training"
+        required: true
+      responses:
+        200:
+          description: "Job created"
+
+  /models:
+    get:
+      tags:
+      - "data"
+      summary: "List all models"
+      description: ""
+      operationId: "getAllModels"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Listing models"
