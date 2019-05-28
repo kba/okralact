@@ -1,0 +1,135 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+% The preceding line is only needed to identify funding in the first footnote. If that is unneeded, please comment it out.
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{rotating}
+\usepackage{cleveref}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{multirow}
+\begin{document}
+
+\title{
+okralact - foundations of a turn-key multi-engine Open Source OCR training infrastructure \\
+\thanks{This work was partially supported by the Deutsche Forschungsgemeinschaft (DFG) - Project number 274863866}
+}
+
+\author{%
+\IEEEauthorblockN{1\textsuperscript{st} Konstantin Baierer}
+\IEEEauthorblockA{\textit{Berlin State Library} \\
+konstantin.baierer@sbb.spk-berlin.de}
+\and
+\IEEEauthorblockN{2\textsuperscript{nd} Rui Dong}
+\IEEEauthorblockA{\textit{Institut für Informatik} \\
+\textit{Leipzig University}\\
+dongrui@ccs.neu.edu}
+\and
+\IEEEauthorblockN{3\textsuperscript{rd} Clemens Neudecker}
+\IEEEauthorblockA{\textit{Berlin State Library} \\
+clemens.neudecker@sbb.spk-berlin.de}
+}
+
+\maketitle
+
+% CN: Here is the call for papers: https://www.primaresearch.org/hip2019/callForPapers. For the purposes of HIP, it is important to stress the context of _historical_ documents. We can (and should, I will write sth) introduce the "problem" of historical document processing first like: a) what are the challenges of historical documents, why do we require more tailored solutions b) the possibilities of NNs and training, thus being able to train models for historical documents that can outperform off-the-shelf general OCR classifiers c) the lack of an ecosystem for Open Source OCR model generation due to (why?) i) bad usability/docs toolchain for training and their diversity and ii) lack of ground truth/standardization...you know this much better than me. This is the introduction. Then we proceed with a short discussion of Open OCR, and what the pros/cons of the selected algorithms are and why it is beneficial to be able to train all of them from one "system" - here we can e.g. argue for better evaluation/testing/replicability. Now the main part comes with the description of okralact... To close, it is important to provide a clear perspective again as to how this work will contribute to solving the challenges of historic documents from the introduction. 
+
+\begin{abstract}
+
+Optical character recognition (OCR) of historical documents has been much more
+difficult than OCR of modern texts due to the idiosyncrasies and wide
+variability of font, layout, language, orthography of printed texts before ca.
+1850. Most OCR engines are optimized towards supporting the widest possible set
+of modern text ("OmniFont OCR") with little or no facilities for the user to
+adapt the engine. With the technologies around OCR embracing Deep Learning with
+neural networks (NN), there have been various efforts to develop Free Software
+OCR engines that can be adapted to different types of documents by training
+specific models based on manually labeled ground truth (GT). What these
+engines offer in terms of implementation finesse they lack in interoperability
+and standardization. In this paper, we present okralact, a set of specifications
+and a prototypical implementation of an engine-agnostic framework for training
+Open Source OCR engines like tesseract, ocropus, kraken or calamari. We briefly
+compare these engines, describe the specifications and software we have been
+developing and outline the challenges in and our plans to contribute to
+a more accessible and interoperable Open Source OCR ecosystem.
+
+\end{abstract}
+
+\begin{IEEEkeywords}
+OCR, ocropus, kraken, calamari, tesseract
+\end{IEEEkeywords}
+
+\section*{Introduction}
+
+
+The rise of deep learning in the last decade has been a game-changer for image
+processing, text recognition and layout analysis, the key parts of optical
+character recognition (OCR) workflows. The text recognition technology in
+particular has seen a paradigm-shift, away from a combination of character
+segmentation and pattern-based detection, towards segmentation-free recognition
+based on trained neural networks (NN).
+%Any NN-based approach involves two steps: Training a model based on manually annotated ground truth (GT) and applying this model to data, in the case of OCR to recognize the text in images.
+
+Most of the state-of-the-art OCR engines apply a hybrid recurrent convolutional neural network combined with a connectionist temporal classification (CTC) \cite{graves2006connectionist} layer as the OCR model. Deep convolutional neural networks (CNN) \cite{krizhevsky2012imagenet}  are added as the bottom layers to extract hierarchical location-invariant features from the raw images \cite{wick2018improving}. Long short term memory (LSMT) \cite{hochreiter1997long} based recurrent neural networks, which are effective in capturing the dependencies in temporal sequences, are then added on top of the CNN layers to extract sequential image representations. The CTC layer allows the text recognition model to be trained on pairs of images and ground truth text without explicitly aligning between them. It both saves the efforts of segmenting the images into characters and avoids the possible errors introduced in this process. 
+
+%Any NN-based approach involves two steps: Training a model based on manually annotated ground truth (GT) and applying this model to data, in the case of OCR to recognize the text in images.
+However, these NN-based OCR engines vary wildly in their designing assumptions, e.g., the format of the input data, the hardware requirements, as well as the set of adjustable parameters for building and training the model. For example, some engines could only be run on CPU devices while the others could utilize the computation power of GPU devices. Some of them allow user to build their own neural networks while the others have fixed model structure. The trained models are engine-specific, sometime even to a specific version of an engine and in most cases, it is very difficult to assess what kind of data a model was trained on after the fact.
+
+% Since training from GT is so essential for the process, all NN-based OCR engines
+% offer tools to train new models. However the usability of these training tools
+% varies wildly. Different engines have different assumptions on the kind of input
+% data they expect, the kind of hardware they are run on and employ slightly different
+% terminology. The trained models are engine-specific, sometime even to a specific
+% version of an engine and in most cases, it is very difficult to assess what kind
+% of data a model was trained on after the fact.
+
+To overcome these obstacles to adoption, we propose \textit{okralact}, a flexible set of specifications
+and a software prototype to harmonize the input data, parameterization and provenance
+tracking of different engines. 
+
+\section*{Open Source OCR}
+
+There have been various Free Software projects that implement NN technologies
+for OCR. In our work we focus on the four most prominent projects: tesseract, ocropus,
+kraken and calamari.\footnote{All of the above are released with the Apache 2.0 license.}
+
+\begin{table}[b]
+\begin{tabular}{llll}
+\hline
+Engine    & Main Developer     & Stack                      & Development \\ \hline
+OCRopus   & Tom Breuel         & Python                     & stale       \\
+kraken    & Benjamin Kiessling & Python, Torch              & active      \\
+Calamari  & Christoph Wick     & Python, Tensorflow         & active      \\
+tesseract & Ray Smith          & C++                        & active
+\end{tabular}
+\caption{Basic properties of Open Source OCR engines}
+\label{tab:basic}
+\end{table}
+
+\begin{table}[b]
+\begin{tabular}{lllll}
+\hline
+Engine    & Contributors & First Release & GitHub Stars & SLOC \\ \hline
+OCRopus   & 28           & 2010          & 2557         & 4996 \\
+kraken    & 10           & 2015          & 146          & 4065 \\
+Calamari  & 7            & 2018          & 299          & 6116 \\
+tesseract & 102          & 1985          & 27135        & 143251 \\
+
+\end{tabular}
+\caption{Software metrics of selected Open Source OCR engines as of 2019-05-22}
+\label{tab:stats}
+\end{table}
+
+\subsection*{OCRopus}
+
+The brainchild of Thomas Breuel and first released in 2007, OCRopus \cite{breuel} was initially based on tesseract. With the release of the Python implementation ocropy in 2010, OCRopus revolutionized OCR by employing Long-Short-Term-Memory (LSTM) and bundling a set of rudimentary but usable command
+line tools to not only train and apply models but also preprocess images (binarization, deskewing, layout analysis), evaluate recognition results and a basic user interface to produce GT data.
+% CN: did the clstm part in ocropy introduce the NN? How can/should we refer to the current work from Tom, e.g. the PyTorch implementation? Furthermore, to satisfy the "state-of-the-art" we should say a few words about those who already successfully trained and redistributed models for historical documents. I can think of Uwe Springmann, Jesper Zedlitz, ?
+% kba: No, clstm was the reimplementation of the LSTM from ocropy in C++. At this point it's effectively dead and clstm-trained models never gained traction beyond kraken < 1.0.
+% kba: Ocropy2 ist alpha, hat sich seit langem nichts getan, gibt keine Veroeffentlichung dazu.
+% kba: About trianedtrained models: Bruce Roberts polytonic greek models come to mind, also https://github.com/tmbdev/ocropy/wiki/Models. Plus th
+
+
