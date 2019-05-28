@@ -1,5 +1,5 @@
 % ----------------------------------------------------------------------
-%j
+%
 % TODO
 %
 % - spelling of ocropy, OCRopus, OCRopy
@@ -7,7 +7,7 @@
 % ----------------------------------------------------------------------
 
 
-\documentclass[conference]{IEEEtran}
+\documentclass[conference]{IEEEtran}         
 \IEEEoverridecommandlockouts
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -191,10 +191,15 @@ Different OCR engines display different design features in terms of the technica
 
 \subsubsection*{Implementation}
 
-As shown in Table \ref{tab:basic}, tsseract is implemented via C++ while the other three engines are all implemented via Python.  Tesseract and OCRopus implements the neural networks as well as the inference from stratch without utilizing any existing deep learning libraries. Kraken uses PyTorch as its backend deep learning engines. Calamari provides the option of backend to the users, but currently it only supports Tensorflow.
+As shown in Table \ref{tab:basic}, tsseract is implemented in C++ while the  
+other three engines are all written in Python. Tesseract and OCRopus   
+implement the neural networks as well as the inference from scratch without 
+utilizing any existing deep learning libraries. Kraken uses PyTorch as its   
+backend deep learning engines. Calamari provides the option of backend to the
+users, but currently it only supports Tensorflow.                            
 
 %\subsubsection*{Library Dependencies}
-\subsubsection*{Hardware Requirement}
+\subsubsection*{Hardware Requirements}
 
 Both Kraken and Calamari supports GPU training, which has much higher computation speed than training on CPU devices. 
 
@@ -229,7 +234,7 @@ Layers   &Parameters & OCRopus     & kraken                      & Calamari & te
 & direction & N & Y & N & Y \\
 & dynamic cell & lstm & lstm/gru & lstm & lstm/gru\\
 & time axis& N & Y & Y & N \\\hline
-Output & output size& N & Y & Y & N \\\hline
+Output & output size& N & Y & Y & N \\
 \end{tabular}
 \caption{Model Design Options for Open Source OCR engines.}
 \label{tab:model_param1}
@@ -245,7 +250,7 @@ Parameters & & OCRopus     & kraken                      & Calamari & tesseract\
 &layer & N & N  & N & Y \\
 \hline
 Optimizer &  &  N & Y & N & Y \\\hline
-Early Stop & & N & Y & Y & Y \\\hline
+Early Stop & & N & Y & Y & Y \\
 %& condition & & performance not & performance continuously & error rate \\
 %& & & significantly improving & getting worse&  small enough\\ \hline
 \end{tabular}
@@ -264,9 +269,26 @@ Early Stop & & N & Y & Y & Y \\\hline
 %     * Clean up evaluation
 
 \subsection*{Prototype}     
-As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server architecture application. The interactions between the client nodes and the server are implemented via Flask, a lightweight web server gateway `interface (WSGI) web application framework. Users could upload the training or evaluation dataset and configuration files specifying the OCR engine and the parameters from the client end. The user could also submit a request of training an OCR model with the selected dataset and configuration file to the server. After the job is submitted, the user could check job status. After a model is trained, the user could download the model to client machine. The user could also submit an evaluation request with a selected evaluation dataset and a selected model.
 
-All the jobs submitted to the server are handled by task queues. Redis Queue is utilized as the backend on the server to process job requests sent from the client end. It is a Python task queue built on top of Redis that executes work outside an HTTP request-response cycle. It would put job requests into the queue of a given worker, which serves in first-in-first-out order. When a job gets to run, it would call the common API for different OCR engines to interpret the configuration files into the training command for the specified OCR engine. 
+As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server    
+architecture application. The interactions between the client nodes and the     
+server are implemented using Flask, a lightweight Web Server Gateway Interface   
+(WSGI) web application framework. Users could upload the training or evaluation 
+dataset and configuration files specifying the OCR engine and the parameters    
+from the client end. The user could also submit a request of training an OCR    
+model with the selected dataset and configuration file to the server. After the 
+job is submitted, the user could check job status. After a model is trained,    
+the user could download the model to client machine. The user could also submit 
+an evaluation request with a selected evaluation dataset and a selected model.
+
+All the jobs submitted to the server are handled by task queues. Redis Queue is 
+utilized as the backend on the server to process job requests sent from the     
+client end. It is a Python task queue built on top of Redis that executes work  
+outside an HTTP request-response cycle. It would put job requests into the      
+queue of a given worker, which serves in first-in-first-out order. When a job   
+gets to run, it would call the common API for different OCR engines to
+interpret the configuration files into the training command for the specified
+OCR engine.
 
 \begin{figure*}[ht!]
         \begin{center}
