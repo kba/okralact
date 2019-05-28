@@ -1,3 +1,12 @@
+% ----------------------------------------------------------------------
+%j
+% TODO
+%
+% - spelling of ocropy, OCRopus, OCRopy
+%
+% ----------------------------------------------------------------------
+
+
 \documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage{cite}
@@ -6,6 +15,7 @@
 \usepackage{graphicx}
 \usepackage{rotating}
 \usepackage{cleveref}
+\usepackage{hyperref}
 \usepackage[utf8]{inputenc}
 \usepackage{textcomp}
 \usepackage{xcolor}
@@ -142,11 +152,24 @@ has reached the same traction in the Free Software community as the original Pyt
 
 \subsection*{tesseract}
 
-tesseract \cite{4376991} is the oldest Free Software OCR engine and one of the oldest OCR engines still in development. Consistently helmed by Ray Smith, tesseract has gone through various iterations and partial rewrites and changing ownership. Open Source since 2005 and sponsored by Google since 2006, tesseract is the most well-known and most widely used Open Source OCR engine (c.f. \cref{tab:stats}).
+tesseract \cite{4376991} was the first Free Software OCR engine and remains one of
+the oldest OCR engines still in development. Consistently helmed by Ray Smith,
+tesseract has gone through various iterations and partial rewrites and changing
+ownership. Open Source since 2005 and sponsored by Google since 2006, tesseract
+is the most well-known and most widely used Open Source OCR engine
+(c.f. Table \ref{tab:stats}).
 
-While earlier versions of tesseract did contain training facilities that were used in the context of OCR of historical documents, e.g. in the eMOP project 
-\cite{doi:10.1093/llc/fqv062}
-With the release of version 4.0.0 in 2018, tesseract introduced a trainable engine based on LSTM NN. 
+While earlier versions of tesseract did contain training facilities that
+were used in the context of OCR of historical documents, e.g. in the eMOP and
+IMPACT projects, these had severe limitations and required cumbersome
+character-based training with little positive effect on OCR accuracy
+for historical documents.\cite{doi:10.1093/llc/fqv062}
+
+With the release of version 4.0.0 in 2018, tesseract introduced a trainable
+engine based on LSTM NN. While still a very involved, multi-step process, the
+improved accuracy and fine-tuning to specific corpora outweighs the
+effort. There have been efforts to streamline the training process, e.g. ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
+
 % CN: Also here we can say sth about training tesseract. There is e.g. eMOP \cite{doi:10.1093/llc/fqv062} where we failed training tesseract 3 successfully for historic documents. Obviously we should mention ocrd-train here too.
 
 \subsection*{kraken}
@@ -177,7 +200,18 @@ Both Kraken and Calamari supports GPU training, which has much higher computatio
 
 \subsubsection*{Model Parameters}
 
-Different OCR engines provides different levels of freedom for the users to design their own neural network structures. OCRopy does not support CNN to extract features from raw images. The raw image features are directly feed into the LSTM layers. It only allows users to choose whether to use bidirectional or unidirectional LSTM layer and the size of hidden states. The number of LSTM layers are fixed. Tesseract, kraken and Calamari provide more modeling options to the users. They allow the users to add arbitrary number of CNN layers, pooling layers, dropout layers and LSTM layers. User could choose activation function from $sigmoid$, $tanh$, $relu$, $linear$ and $softmax$ for CNN layers in tesseract and kraken but not in Calamari. All three engines supports user specified  Tesseract and Kraken also support user specified stride size of maxpooling in addition to the kernel size.
+Different OCR engines provides different levels of freedom for the users to    
+design their own neural network structures. OCRopy does not support CNN to     
+extract features from raw images. The raw image features are directly feed into
+the LSTM layers. It only allows users to choose whether to use bidirectional or
+unidirectional LSTM layer and the size of hidden states. The number of LSTM    
+layers are fixed. Tesseract, kraken and Calamari provide more modeling options
+to the users. They allow the users to add arbitrary number of CNN layers,
+pooling layers, dropout layers and LSTM layers. User could choose activation
+function from $sigmoid$, $tanh$, $relu$, $linear$ and $softmax$ for CNN layers
+in tesseract and kraken but not in Calamari. All three engines supports user
+specified  Tesseract and Kraken also support user specified stride size of
+maxpooling in addition to the kernel size.
 
 \begin{table}[bt]
 \begin{tabular}{llllll}
@@ -281,4 +315,3 @@ All the jobs submitted to the server are handled by task queues. Redis Queue is 
 \bibliography{bibliography}
 
 \end{document}
-
