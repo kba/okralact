@@ -1,4 +1,3 @@
-
 % ----------------------------------------------------------------------
 %
 % TODO
@@ -47,7 +46,24 @@ clemens.neudecker@sbb.spk-berlin.de}
 
 \maketitle
 
-% CN: Here is the call for papers: https://www.primaresearch.org/hip2019/callForPapers. For the purposes of HIP, it is important to stress the context of _historical_ documents. We can (and should, I will write sth) introduce the "problem" of historical document processing first like: a) what are the challenges of historical documents, why do we require more tailored solutions b) the possibilities of NNs and training, thus being able to train models for historical documents that can outperform off-the-shelf general OCR classifiers c) the lack of an ecosystem for Open Source OCR model generation due to (why?) i) bad usability/docs toolchain for training and their diversity and ii) lack of ground truth/standardization...you know this much better than me. This is the introduction. Then we proceed with a short discussion of Open OCR, and what the pros/cons of the selected algorithms are and why it is beneficial to be able to train all of them from one "system" - here we can e.g. argue for better evaluation/testing/replicability. Now the main part comes with the description of okralact... To close, it is important to provide a clear perspective again as to how this work will contribute to solving the challenges of historic documents from the introduction. 
+% CN: Here is the call for papers:
+% https://www.primaresearch.org/hip2019/callForPapers. For the purposes of HIP,
+% it is important to stress the context of _historical_ documents. We can (and
+% should, I will write sth) introduce the "problem" of historical document
+% processing first like: a) what are the challenges of historical documents,
+% why do we require more tailored solutions b) the possibilities of NNs and
+% training, thus being able to train models for historical documents that can
+% outperform off-the-shelf general OCR classifiers c) the lack of an ecosystem
+% for Open Source OCR model generation due to (why?) i) bad usability/docs
+% toolchain for training and their diversity and ii) lack of ground
+% truth/standardization...you know this much better than me. This is the
+% introduction. Then we proceed with a short discussion of Open OCR, and what
+% the pros/cons of the selected algorithms are and why it is beneficial to be
+% able to train all of them from one "system" - here we can e.g. argue for
+% better evaluation/testing/replicability. Now the main part comes with the
+% description of okralact... To close, it is important to provide a clear
+% perspective again as to how this work will contribute to solving the
+% challenges of historic documents from the introduction. 
 
 \begin{abstract}
 
@@ -86,15 +102,40 @@ particular has seen a paradigm-shift, away from a combination of character
 % varies wildly. Different engines have different assumptions n the kind of input
 % data they expect, t thehe kind of haware they are run on and employ slightly different
 % terminology. The tained models are engine-specific, sometime even to a specific
-% version of an engine and in most cases, it is very difficult to assess what kind
-% of data a model was trained on after the fact.gmentation and pattern-based detection, towards segmentation-free recognition
+% version of an engine and in most cases, it is very difficult to assess what
+% kind of data a model was trained on after the fact.gmentation and
+% pattern-based detection, towards segmentation-free recognition
 based on trained neural networks (NN).
-%Any NN-based approach involves two steps: Training a model based on manually annotated ground truth (GT) and applying this model to data, in the case of OCR to recognize the text in images.
+%Any NN-based approach involves two steps: Training a model based on manually
+%annotated ground truth (GT) and applying this model to data, in the case of
+%OCR to recognize the text in images.
 
-Most of the state-of-the-art OCR engines apply a hybrid recurrent convolutional neural network combined with a connectionist temporal classification (CTC) \cite{graves2006connectionist} layer as the OCR model. Deep convolutional neural networks (CNN) \cite{krizhevsky2012imagenet} are added as the bottom layers to extract hierarchical location-invariant features from the raw images \cite{wick2018improving}. Recurrent neural networks (RNN) \cite{mikolov2010recurrent}, which are effective in capturing the dependencies in temporal sequences, are then added on top of the CNN layers to extract sequential image representations. The CTC layer allows the text recognition model to be trained on pairs of images and ground truth text without explicitly aligning between them. It both saves the efforts of segmenting the images into characters and avoids the possible errors introduced in this process. 
+Most of the state-of-the-art OCR engines apply a hybrid recurrent convolutional
+neural network combined with a connectionist temporal classification (CTC)
+\cite{graves2006connectionist} layer as the OCR model. Deep convolutional
+neural networks (CNN) \cite{krizhevsky2012imagenet} are added as the bottom
+layers to extract hierarchical location-invariant features from the raw images
+\cite{wick2018improving}. Recurrent neural networks (RNN)
+\cite{mikolov2010recurrent}, which are effective in capturing the dependencies
+in temporal sequences, are then added on top of the CNN layers to extract
+sequential image representations. The CTC layer allows the text recognition
+model to be trained on pairs of images and ground truth text without explicitly
+aligning between them. It both saves the efforts of segmenting the images into
+characters and avoids the possible errors introduced in this process. 
 
-%Any NN-based approach involves two steps: Training a model based on manually annotated ground truth (GT) and applying this model to data, in the case of OCR to recognize the text in images.
-However, these NN-based OCR engines vary wildly in their designing assumptions, e.g., the format of the input data, the hardware requirements, as well as the set of adjustable parameters for building and training the model. For example, some engines could only be run on CPU devices while the others could utilize the computation power of GPU devices. Some of them allow users to build their own neural networks while others have a fixed model structure. The trained models are engine-specific, sometimes even to a specific version of an engine and in most cases, it is very difficult to assess what kind of data a model was trained on after the fact.
+%Any NN-based approach involves two steps: Training a model based on manually
+%annotated ground truth (GT) and applying this model to data, in the case of
+%OCR to recognize the text in images.
+
+However, these NN-based OCR engines vary wildly in their designing assumptions,
+e.g., the format of the input data, the hardware requirements, as well as the
+set of adjustable parameters for building and training the model. For example,
+some engines could only be run on CPU devices while the others could utilize
+the computation power of GPU devices. Some of them allow users to build their
+own neural networks while others have a fixed model structure. The trained
+models are engine-specific, sometimes even to a specific version of an engine
+and in most cases, it is very difficult to assess what kind of data a model was
+trained on after the fact.
 
 % 
 
@@ -170,27 +211,41 @@ for historical documents.\cite{doi:10.1093/llc/fqv062}
 
 With the release of version 4.0.0 in 2018, tesseract introduced a trainable
 engine based on LSTM NN. While still a very involved, multi-step process, the
-improved accuracy and fine-tuning to specific corpora outweighs the
-effort. There have been efforts to streamline the training process, e.g. ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
+improved accuracy and fine-tuning to specific corpora outweighs the effort.
+There have been efforts to streamline the training process, e.g.
+ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
 
-% CN: Also here we can say sth about training tesseract. There is e.g. eMOP \cite{doi:10.1093/llc/fqv062} where we failed training tesseract 3 successfully for historic documents. Obviously we should mention ocrd-train here too.
+% CN: Also here we can say sth about training tesseract. There is e.g. eMOP
+% \cite{doi:10.1093/llc/fqv062} where we failed training tesseract 3
+% successfully for historic documents. Obviously we should mention ocrd-train
+% here too.
 
 \subsection*{kraken}
 
-kraken \cite{DBLP:journals/corr/RomanovMSK17} was started as a fork of ocropy by Benjamin Kiessling in 2015 to rectify a number of issues while preserving (mostly) functional equivalence. While retaining many of the algorithms around OCR, the actual recognition engine has been based on the Torch machine learning framework since version 2.0 and can not reasonably be considered a fork of ocropy anymore.
-% CN: As far as I am aware, most models for kraken are either from Ben himself or were produced via the Open Islamic Texts Initiative project, https://openiti.github.io/. 
+kraken \cite{DBLP:journals/corr/RomanovMSK17} was started as a fork of ocropy
+by Benjamin Kiessling in 2015 to rectify a number of issues while preserving
+(mostly) functional equivalence. While retaining many of the algorithms around
+OCR, the actual recognition engine has been based on the Torch machine learning
+framework since version 2.0 and can not reasonably be considered a fork of
+ocropy anymore.
+
+% CN: As far as I am aware, most models for kraken are either from Ben himself
+% or were produced via the Open Islamic Texts Initiative project,
+% https://openiti.github.io/. 
 
 \subsection*{calamari}
 
-Christoph Wick has been developing the Calamari \cite{DBLP:journals/corr/abs-1807-02004}
-OCR engine since 2018, based on the codebases ocropy and kraken but backed by the
-TensorFlow machine learning framework.
+Christoph Wick has been developing the Calamari
+\cite{DBLP:journals/corr/abs-1807-02004} OCR engine since 2018, based on the
+codebases ocropy and kraken but backed by the TensorFlow machine learning
+framework.
 
 \subsection*{Feature comparison}
 
 % The goal of \textit{okralact} is to wrap all the engines into a common
 
-Different OCR engines display different design features in terms of the technical details of implementation and the interfaces provided to the users. 
+Different OCR engines display different design features in terms of the
+technical details of implementation and the interfaces provided to the users. 
 
 \subsubsection*{Implementation}
 
@@ -204,11 +259,22 @@ users, but currently it only supports Tensorflow.
 %\subsubsection*{Library Dependencies}
 \subsubsection*{Hardware Requirements}
 
-Both kraken and kalamari support GPU training, which offers significant improvements with regard to computation speed than training on CPU devices. 
+Both kraken and kalamari support GPU training, which offers significant
+improvements with regard to computation speed than training on CPU devices. 
 
 \subsubsection*{Model Parameters}
 
-Table \ref{tab:model_param1} shows that different OCR engines provides different levels of freedom for the users to design their own neural network structures. OCRopus does not support CNN as the feature extractor for raw images. The raw image features are directly feed into the LSTM layers. It only allows users to choose whether to use bidirectional or unidirectional LSTM layer and the size of hidden states. The number of LSTM layers are fixed. Tesseract, kraken and Calamari provide more modeling options to the users. They allow the users to add arbitrary number of CNN , pooling, dropout and RNN layers. All three engines support user specified kernel size and output size in CNN layer, but tesseract and kraken also provide additional options for activation functions. 
+Table \ref{tab:model_param1} shows that different OCR engines provides
+different levels of freedom for the users to design their own neural network
+structures. OCRopus does not support CNN as the feature extractor for raw
+images. The raw image features are directly feed into the LSTM layers. It only
+allows users to choose whether to use bidirectional or unidirectional LSTM
+layer and the size of hidden states. The number of LSTM layers are fixed.
+Tesseract, kraken and Calamari provide more modeling options to the users. They
+allow the users to add arbitrary number of CNN , pooling, dropout and RNN
+layers. All three engines support user specified kernel size and output size in
+CNN layer, but tesseract and kraken also provide additional options for
+activation functions. 
 
 \begin{table}[bt]
 \begin{tabular}{llllll}
@@ -233,7 +299,21 @@ Output & output size& N & Y & N & Y \\
 \end{table}
 
 \subsubsection*{Training Parameters}
-These OCR engines also provide different flexibility to tune the training parameters such as the learning rate, optimizer and whether to use early stopping, as summarized in Table \ref{tab:training_options}. For different optimizers, different OCR engines also provide different ways to adjust optimizer parameters. All four engines allow the user to specify how long the model should be trained in terms of maximum number of training samples, epochs or iterations. Kraken, Calamari and tesseract also support early stopping, i.e., stop training earlier than the specified ending point, when the model performance satisfies some given conditions. For example, kraken supports early stopping when the model performance improvement is not significant. Tesseract stops training when the error rate is lower than a user specified target error rate. Calamari stops training when the model performance is continuously getting worse.
+
+These OCR engines also provide different flexibility to tune the training
+parameters such as the learning rate, optimizer and whether to use early
+stopping, as summarized in Table \ref{tab:training_options}. For different
+optimizers, different OCR engines also provide different ways to adjust
+optimizer parameters. All four engines allow the user to specify how long the
+model should be trained in terms of maximum number of training samples, epochs
+or iterations. Kraken, Calamari and tesseract also support early stopping,
+i.e., stop training earlier than the specified ending point, when the model
+performance satisfies some given conditions. For example, kraken supports early
+stopping when the model performance improvement is not significant. Tesseract
+stops training when the error rate is lower than a user specified target error
+rate. Calamari stops training when the model performance is continuously
+getting worse.
+
 \begin{table}[bt]
 \begin{tabular}{llllll}
 \hline
@@ -253,7 +333,15 @@ Early Stop & & N & Y & Y & Y \\
 \label{tab:training_options}
 \end{table}
 \subsubsection*{Fine Tuning}
-All four engines provide an interface for the users to fine tuning an existing model with a new training set. OCRopus only allows to continue training an existing model with new data samples, while the other three engines also allow the user to modify the structure of an existing model. Users can cut the head off the network at a given layer and append a new model structure after it. For example, when a user wants to train an OCR model for a new language which shares lots of alphabets with the existing model, the bottom CNN layers could be reused to extract similar image features.
+
+All four engines provide an interface for the users to fine tuning an existing
+model with a new training set. OCRopus only allows to continue training an
+existing model with new data samples, while the other three engines also allow
+the user to modify the structure of an existing model. Users can cut the head
+off the network at a given layer and append a new model structure after it. For
+example, when a user wants to train an OCR model for a new language which
+shares lots of alphabets with the existing model, the bottom CNN layers could
+be reused to extract similar image features.
 
 \subsubsection*{Tooling / User Interfaces}
 
@@ -272,24 +360,26 @@ All four engines provide an interface for the users to fine tuning an existing m
 
 \subsection*{Prototype}     
 
-As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server    
-architecture application. The interactions between the client nodes and the     
-server are implemented using Flask, a lightweight web application framework. Users could upload the training or evaluation 
-dataset and configuration files specifying the OCR engine and the parameters    
-from the client end. The user could also submit a request of training an OCR    
-model with the selected dataset and configuration file to the server. After the 
-job is submitted, the user could check job status. After a model is trained,    
-the user could download the model to client machine. The user could also submit 
-an evaluation request with a selected evaluation dataset and a selected model.
+As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
+architecture application. The interactions between the client nodes and the
+server are implemented using Flask, a lightweight web application framework.
+Users could upload the training or evaluation dataset and configuration files
+specifying the OCR engine and the parameters    from the client end. The user
+could also submit a request of training an OCR    model with the selected
+dataset and configuration file to the server. After the job is submitted, the
+user could check job status. After a model is trained,    the user could
+download the model to client machine. The user could also submit an evaluation
+request with a selected evaluation dataset and a selected model.
 
-To reduce the response time of the HTTP service, all the training or evaluation jobs submitted to the server are handled by task queues in the background. Redis Queue is 
-utilized as the backend on the server to process job requests sent from the     
-client end. It is a Python library built on top of Redis that executes work  
-outside an HTTP request-response cycle.  It would put job requests into the      
-queue of a given worker, which serves in first-in-first-out order. When a job   
-gets to run, it would call the common API for different OCR engines to
-interpret the configuration files into the training command for the specified
-OCR engine.
+To reduce the response time of the HTTP service, all the training or evaluation
+jobs submitted to the server are handled by task queues in the background.
+Redis Queue is utilized as the backend on the server to process job requests
+sent from the     client end. It is a Python library built on top of Redis that
+executes work  outside an HTTP request-response cycle.  It would put job
+requests into the      queue of a given worker, which serves in
+first-in-first-out order. When a job   gets to run, it would call the common
+API for different OCR engines to interpret the configuration files into the
+training command for the specified OCR engine.
 
 \begin{figure*}[ht!]
         \begin{center}
