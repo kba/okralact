@@ -1,5 +1,4 @@
-% ----------------------------------------------------------------------
-%
+% ---------------------------------------------------------------------- %
 % TODO
 %
 % - spelling of ocropy, OCRopus, OCRopy
@@ -97,15 +96,16 @@ The rise of deep learning in the last decade has been a game-changer for image
 processing, text recognition and layout analysis, the key parts of optical
 character recognition (OCR) workflows. The text recognition technology in
 particular has seen a paradigm-shift, away from a combination of character
+segmentation and pattern-based detection, towards
+segmentation-free recognition based on trained neural networks
+(NN).
 % Since training from GT is so essential for the process, all NN-based OCR engines
 % offer tools to train new models. However the usability of these training tools
 % varies wildly. Different engines have different assumptions n the kind of input
-% data they expect, t thehe kind of haware they are run on and employ slightly different
-% terminology. The tained models are engine-specific, sometime even to a specific
+% data they expect, the kind of hardware they are run on and employ slightly different
+% terminology. The trained models are engine-specific, sometime even to a specific
 % version of an engine and in most cases, it is very difficult to assess what
-% kind of data a model was trained on after the fact.gmentation and
-% pattern-based detection, towards segmentation-free recognition
-based on trained neural networks (NN).
+% kind of data a model was trained on after the fact.
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
 %OCR to recognize the text in images.
@@ -121,27 +121,27 @@ in temporal sequences, are then added on top of the CNN layers to extract
 sequential image representations. The CTC layer allows the text recognition
 model to be trained on pairs of images and ground truth text without explicitly
 aligning between them. It both saves the efforts of segmenting the images into
-characters and avoids the possible errors introduced in this process. 
+characters and avoids the possible errors introduced in this process.
 
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
 %OCR to recognize the text in images.
 
-However, these NN-based OCR engines vary wildly in their designing assumptions,
-e.g., the format of the input data, the hardware requirements, as well as the
-set of adjustable parameters for building and training the model. For example,
-some engines could only be run on CPU devices while the others could utilize
-the computation power of GPU devices. Some of them allow users to build their
-own neural networks while others have a fixed model structure. The trained
-models are engine-specific, sometimes even to a specific version of an engine
-and in most cases, it is very difficult to assess what kind of data a model was
-trained on after the fact.
+However, these NN-based OCR engines vary wildly in their design
+assumptions, e.g., the format of the input data, the hardware
+requirements, as well as the set of adjustable parameters for
+building and training an OCR model. For example, some engines can
+only be run on CPU devices while others can tap into the
+computation power of GPU devices. Some allow users to build their
+own neural networks while others have a fixed model structure. The
+trained models are engine-specific, sometimes even to a specific
+version of the engine and in most cases, it is very difficult to
+assess what kind of data a model was trained on after the fact.
 
-% 
-
-To overcome these obstacles to adoption, we propose \textit{okralact}, a flexible set of specifications
-and a software prototype to harmonize the input data, parameterization and provenance
-tracking of different engines. 
+To overcome these obstacles to adoption, we propose
+\textit{okralact}, a flexible set of specifications and a software
+prototype to harmonize the input data, parameterization and
+provenance tracking of different engines.
 
 \section*{Open Source OCR}
 
