@@ -178,16 +178,20 @@ tesseract & 102          & 1985          & 27135        & 143251 \\
 
 \subsection*{OCRopus}
 
-The brainchild of Thomas Breuel and first released in 2007, OCRopus \cite{breuel} was
-initially based on tesseract. With the release of the Python implementation ocropy in
-2010, OCRopus revolutionized OCR by employing Long-Short-Term-Memory (LSTM) and
-bundling a set of rudimentary but usable command line tools to not only train and
-apply models but also preprocess images (binarization, deskewing, layout analysis),
-evaluate recognition results and a basic user interface to produce GT data. Breuel
-has since moved on to create clstm, a better performing LSTM implementation
-\cite{DBLP:conf/icdar/Breuel17}, and ocropy2, a rewrite of OCRopus based on CUDA and
-the PyTorch Deep Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither
-has reached the same traction in the Free Software community as the original Python version.
+The brainchild of Thomas Breuel and first released in 2007, OCRopus
+\cite{breuel} was initially a set of tools around OCR based on
+tesseract. With the release of the Python implementation ocropy in
+2010, OCRopus revolutionized OCR by employing
+Long-Short-Term-Memory (LSTM) and bundling a set of rudimentary but
+usable command line tools to not only train and apply models but
+also preprocess images (binarization, deskewing, layout analysis),
+evaluate recognition results and a basic user interface to produce
+GT data. Breuel has since moved on to create clstm, a better
+performing LSTM implementation \cite{DBLP:conf/icdar/Breuel17}, and
+ocropy2, a rewrite of OCRopus based on CUDA and the PyTorch Deep
+Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither has
+reached the same traction in the Free Software community as the
+original Python version.
 
 % CN: did the clstm part in ocropy introduce the NN? How can/should we refer to the current work from Tom, e.g. the PyTorch implementation? Furthermore, to satisfy the "state-of-the-art" we should say a few words about those who already successfully trained and redistributed models for historical documents. I can think of Uwe Springmann, Jesper Zedlitz, ?
 % kba: No, clstm was the reimplementation of the LSTM from ocropy in C++. At this point it's effectively dead and clstm-trained models never gained traction beyond kraken < 1.0.
@@ -227,7 +231,9 @@ by Benjamin Kiessling in 2015 to rectify a number of issues while preserving
 (mostly) functional equivalence. While retaining many of the algorithms around
 OCR, the actual recognition engine has been based on the Torch machine learning
 framework since version 2.0 and can not reasonably be considered a fork of
-ocropy anymore.
+ocropy anymore. kraken has been having a particular impact on OCR
+of Arabic and is the technical foundation of the Open Islamic Texts
+Initiative \cite{miller_romanov_savant_2018}.
 
 % CN: As far as I am aware, most models for kraken are either from Ben himself
 % or were produced via the Open Islamic Texts Initiative project,
@@ -238,7 +244,9 @@ ocropy anymore.
 Christoph Wick has been developing the Calamari
 \cite{DBLP:journals/corr/abs-1807-02004} OCR engine since 2018, based on the
 codebases ocropy and kraken but backed by the TensorFlow machine learning
-framework.
+framework and with advanced features such as n-fold training and
+voting algorithms. Calamari is the main component of the OCR4all
+framework.\footnote{\url{https://github.com/OCR4all}.}
 
 \subsection*{Feature comparison}
 
