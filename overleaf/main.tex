@@ -6,7 +6,7 @@
 % ----------------------------------------------------------------------
 
 
-\documentclass[conference]{IEEEtran}         
+\documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -62,7 +62,7 @@ clemens.neudecker@sbb.spk-berlin.de}
 % better evaluation/testing/replicability. Now the main part comes with the
 % description of okralact... To close, it is important to provide a clear
 % perspective again as to how this work will contribute to solving the
-% challenges of historic documents from the introduction. 
+% challenges of historic documents from the introduction.
 
 \begin{abstract}
 
@@ -184,7 +184,7 @@ initially based on tesseract. With the release of the Python implementation ocro
 bundling a set of rudimentary but usable command line tools to not only train and
 apply models but also preprocess images (binarization, deskewing, layout analysis),
 evaluate recognition results and a basic user interface to produce GT data. Breuel
-has since moved on to create clstm, a better performing LSTM implementation 
+has since moved on to create clstm, a better performing LSTM implementation
 \cite{DBLP:conf/icdar/Breuel17}, and ocropy2, a rewrite of OCRopus based on CUDA and
 the PyTorch Deep Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither
 has reached the same traction in the Free Software community as the original Python version.
@@ -231,7 +231,7 @@ ocropy anymore.
 
 % CN: As far as I am aware, most models for kraken are either from Ben himself
 % or were produced via the Open Islamic Texts Initiative project,
-% https://openiti.github.io/. 
+% https://openiti.github.io/.
 
 \subsection*{calamari}
 
@@ -245,22 +245,22 @@ framework.
 % The goal of \textit{okralact} is to wrap all the engines into a common
 
 Different OCR engines display different design features in terms of the
-technical details of implementation and the interfaces provided to the users. 
+technical details of implementation and the interfaces provided to the users.
 
 \subsubsection*{Implementation}
 
-As shown in Table \ref{tab:basic}, tesseract is implemented in C++ while the  
-other three engines are all written in Python. Tesseract and OCRopus   
-implement the neural networks as well as the inference from scratch without 
-utilizing any existing deep learning libraries. Kraken uses PyTorch as its   
+As shown in Table \ref{tab:basic}, tesseract is implemented in C++ while the
+other three engines are all written in Python. Tesseract and OCRopus
+implement the neural networks as well as the inference from scratch without
+utilizing any existing deep learning libraries. Kraken uses PyTorch as its
 backend deep learning engines. Calamari provides the option of backend to the
-users, but currently it only supports Tensorflow.                            
+users, but currently it only supports Tensorflow.
 
 %\subsubsection*{Library Dependencies}
 \subsubsection*{Hardware Requirements}
 
 Both kraken and kalamari support GPU training, which offers significant
-improvements with regard to computation speed than training on CPU devices. 
+improvements with regard to computation speed than training on CPU devices.
 
 \subsubsection*{Model Parameters}
 
@@ -274,7 +274,7 @@ Tesseract, kraken and Calamari provide more modeling options to the users. They
 allow the users to add arbitrary number of CNN , pooling, dropout and RNN
 layers. All three engines support user specified kernel size and output size in
 CNN layer, but tesseract and kraken also provide additional options for
-activation functions. 
+activation functions.
 
 \begin{table}[bt]
 \begin{tabular}{llllll}
@@ -319,13 +319,13 @@ getting worse.
 \hline
 Parameters & & OCRopus     & kraken                      & Calamari & tesseract\\ \hline
 % CNN Layer& & NA & Yes & Yes & Yes  \\
-\multirow{2}{*}{Learning Rate}& overall & N & Y & Y & Y\\ 
+\multirow{2}{*}{Learning Rate}& overall & N & Y & Y & Y\\
 &layer & N & N  & N & Y \\
 \hline
 Optimizer &  &  N & Y & N & Y \\\hline
 Early Stop & & N & Y & Y & Y \\
 %\hline
-% Maximum  & & lines & epoches & iterations & iterations \\ 
+% Maximum  & & lines & epoches & iterations & iterations \\
 %& condition & & performance not & performance continuously & error rate \\
 %& & & significantly improving & getting worse&  small enough\\ \hline
 \end{tabular}
@@ -358,7 +358,7 @@ be reused to extract similar image features.
 %     * Drop the line GT part
 %     * Clean up evaluation
 
-\subsection*{Prototype}     
+\subsection*{Prototype}
 
 As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
@@ -405,23 +405,23 @@ training command for the specified OCR engine.
 
 %\section*{References}
 
-% Please number citations consecutively within brackets \cite{b1}. The 
-% sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
-% number, as in \cite{IEEEexample:bluebookbook} ---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
+% Please number citations consecutively within brackets \cite{b1}. The
+% sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference
+% number, as in \cite{IEEEexample:bluebookbook} ---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at
 % the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
-% 
-% Number footnotes separately in superscripts. Place the actual footnote at 
-% the bottom of the column in which it was cited. Do not put footnotes in the 
+%
+% Number footnotes separately in superscripts. Place the actual footnote at
+% the bottom of the column in which it was cited. Do not put footnotes in the
 % abstract or reference list. Use letters for table footnotes.
-% 
-% Unless there are six authors or more give all authors' names; do not use 
-% ``et al.''. Papers that have not been published, even if they have been 
-% submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers 
-% that have been accepted for publication should be cited as ``in press'' \cite{b5}. 
-% Capitalize only the first word in a paper title, except for proper nouns and 
+%
+% Unless there are six authors or more give all authors' names; do not use
+% ``et al.''. Papers that have not been published, even if they have been
+% submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers
+% that have been accepted for publication should be cited as ``in press'' \cite{b5}.
+% Capitalize only the first word in a paper title, except for proper nouns and
 % element symbols.
-% 
-% For papers published in translation journals, please give the English 
+%
+% For papers published in translation journals, please give the English
 % citation first, followed by the original foreign-language citation \cite{b6}.
 
 \bibliographystyle{IEEEtran}
