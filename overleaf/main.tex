@@ -287,20 +287,20 @@ activation functions.
 \begin{table}[bt]
 \begin{tabular}{llllll}
 \hline
-Layers   &Parameters & OCRopus     & kraken                      & Calamari & tesseract\\ \hline
+Layers                   & Parameters   & OCRopus              & kraken   & Calamari & tesseract \\ \hline
 % CNN Layer& & NA & Yes & Yes & Yes  \\
-\multirow{ 3}{*}{CNN} & kernel size & \multirow{ 3}{*}{NA} & Y & Y & Y  \\
-& activation &  & Y & N & Y \\
-& output size & & Y & Y &  Y\\\hline
-\multirow{2}{*}{Pooling} &kernel size & \multirow{2}{*}{NA} &  Y & Y & Y \\
-& stride size &  & Y & N & Y \\\hline
-\multirow{2}{*}{Dropout} &probability & \multirow{2}{*}{NA} &  Y & Y & Y\\
-&dimension &  & Y & N & Y \\\hline
-\multirow{2}{*}{RNN} & output size & Y &  Y & Y & Y\\
-& direction & Y & Y & N & Y \\
-& dynamic cell & lstm & lstm/gru & lstm & lstm/gru\\
-& time axis& N & Y & N & Y \\\hline
-Output & output size& N & Y & N & Y \\
+\multirow{ 3}{*}{CNN}    & kernel size  & \multirow{ 3}{*}{NA} & Y        & Y        & Y         \\
+                         & activation   &                      & Y        & N        & Y         \\
+                         & output size  &                      & Y        & Y        & Y         \\ \hline
+\multirow{2}{*}{Pooling} & kernel size  & \multirow{2}{*}{NA}  & Y        & Y        & Y         \\
+                         & stride size  &                      & Y        & N        & Y         \\ \hline
+\multirow{2}{*}{Dropout} & probability  & \multirow{2}{*}{NA}  & Y        & Y        & Y         \\
+                         & dimension    &                      & Y        & N        & Y         \\ \hline
+\multirow{2}{*}{RNN}     & output size  & Y                    & Y        & Y        & Y         \\
+                         & direction    & Y                    & Y        & N        & Y         \\
+                         & dynamic cell & lstm                 & lstm/gru & lstm     & lstm/gru  \\
+                         & time axis    & N                    & Y        & N        & Y         \\ \hline
+Output                   & output size  & N                    & Y        & N        & Y         \\
 \end{tabular}
 \caption{Model Design Options for Open Source OCR engines.}
 \label{tab:model_param1}
@@ -325,31 +325,33 @@ getting worse.
 \begin{table}[bt]
 \begin{tabular}{llllll}
 \hline
-Parameters & & OCRopus     & kraken                      & Calamari & tesseract\\ \hline
-% CNN Layer& & NA & Yes & Yes & Yes  \\
-\multirow{2}{*}{Learning Rate}& overall & N & Y & Y & Y\\
-&layer & N & N  & N & Y \\
+Parameters                     &         & OCRopus & kraken & Calamari & tesseract \\ \hline
+% CNN Layer                      &         & NA      & Yes    & Yes      & Yes       \\
+\multirow{2}{*}{Learning Rate} & overall & N       & Y      & Y        & Y         \\
+                               & layer   & N       & N      & N        & Y         \\
 \hline
-Optimizer &  &  N & Y & N & Y \\\hline
-Early Stop & & N & Y & Y & Y \\
+Optimizer                      &         & N       & Y      & N        & Y         \\ \hline
+Early Stop                     &         & N       & Y      & Y        & Y         \\
 %\hline
-% Maximum  & & lines & epoches & iterations & iterations \\
-%& condition & & performance not & performance continuously & error rate \\
-%& & & significantly improving & getting worse&  small enough\\ \hline
+% Maximum &           & lines & epoches                 & iterations               & iterations   \\
+%         & condition &       & performance not         & performance continuously & error rate   \\
+%         &           &       & significantly improving & getting worse            & small enough \\ \hline
 \end{tabular}
 \caption{Training Options for Open Source OCR engines.}
 \label{tab:training_options}
 \end{table}
 \subsubsection*{Fine Tuning}
 
-All four engines provide an interface for the users to fine tuning an existing
-model with a new training set. OCRopus only allows to continue training an
-existing model with new data samples, while the other three engines also allow
-the user to modify the structure of an existing model. Users can cut the head
-off the network at a given layer and append a new model structure after it. For
-example, when a user wants to train an OCR model for a new language which
-shares lots of alphabets with the existing model, the bottom CNN layers could
-be reused to extract similar image features.
+All four engines provide a user interface for fine-tuning an
+existing model with new training data. Ocropy only allows
+continued training of an existing model with new data samples,
+while the other three engines also allow the user to modify the
+structure of an existing model. Users can cut the head off the
+network at a given layer and append a new model structure after it.
+For example, when a user wants to train an OCR model for a new
+language which shares lots of alphabets with the existing model,
+the bottom CNN layers can be reused to extract similar image
+features.
 
 \subsubsection*{Tooling / User Interfaces}
 
@@ -358,7 +360,51 @@ be reused to extract similar image features.
 
 \section*{okralact}
 
-\subsection*{dications}
+\subsection*{Specifications}
+
+Okralact is an integral part of the OCR-D project that has been
+consolidating specifications and Open Source software around OCR
+with a focus on enabling mass full text digitization of historical
+documents.\footnote{\url{https://ocr-d.github.io}.} As with the
+OCR-D project proper, the primary focus of okralact is to develop
+specifications, technical documentation about the different engines
+and their parameterization. These specifications are made
+actionable in a prototype training infrastructure (c.f.
+\ref{sec:prototype}) but are developed with different usage
+scenarios and implementations, as well as the upstream engine
+developers, in mind.
+
+First, we propose a container format for bundling OCR GT data.
+While all the engines expect GT in the form of line-wise image-text
+tuples, supported file formats, encodings and file structure and
+naming vary from engine to engine. The engines work on image and
+text data exclusively without the need for layout information.
+Therefore, no engine currently supports any of the established OCR
+file formats (ALTO, hOCR, PAGE-XML...). We aim to change this by
+reusing as input format the OCRD-ZIP GT format developed within
+OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.} This
+allows users to use advanced tools for GT creation, such as PRIMA
+Labs' Aletheia.
+
+Secondly, we compared the parameterization of the tools and
+identified a set of common parameters that are equivalent across
+engines, yet may differ slightly in usage or terminology. Beyond
+this common API, engines have various configuration options and
+parameters that are unique per engine. We gathered this information
+in a JSON Schema document that defines the common API and
+engine-specific parameters in a machine-actionable
+form.\footnote{\url{https://ocr-d.github.io/gt-profile.yaml}.} We
+can use this schema to validate input configurations to the
+training engine, to generate documentation such as help pages, user
+interface hints and auto-completion.
+
+Lastly, we took a look at how trained models are distributed and
+defined another BagIt profile for describing trained models. This
+format allows bundling not only the (engine-specific) models but
+also the configuration that was used to train it and optionally the
+GT the model was based on. This allows broader reuse of models
+since it contains the provenance of the model in terms of GT used,
+parameterization, intermediary evaluation results and log files.
 
 % * OCRD-ZIP GT format (shortly)
 % * JSON schema for parameters / common API
@@ -367,6 +413,7 @@ be reused to extract similar image features.
 %     * Clean up evaluation
 
 \subsection*{Prototype}
+\label{sec:prototype}
 
 As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
