@@ -22,9 +22,11 @@
 \begin{document}
 
 \title{
-okralact - foundations of a turn-key multi-engine Open Source OCR training infrastructure \\
+okralact - a multi-engine Open Source OCR training system \\
 \thanks{This work was partially supported by the Deutsche Forschungsgemeinschaft (DFG) - Project number 274863866}
 }
+% CN: imho first the title is a bit contradictory, turn-key and foundations within close proximity creates some tension with me; second, also an infrastructure for me needs some actual place related to resources be it either computational or human - neither of which is the case here...how about simplifying to "okralact - a multi-engine Open Source OCR training system"?
+% kba: agreed. I just threw in all the buzzwords because reasons.
 
 \author{%
 \IEEEauthorblockN{1\textsuperscript{st} Konstantin Baierer}
@@ -66,22 +68,20 @@ clemens.neudecker@sbb.spk-berlin.de}
 
 \begin{abstract}
 
-Optical character recognition (OCR) of historical documents has been much more
-difficult than OCR of modern texts due to the idiosyncrasies and wide
+Optical character recognition (OCR) of historical documents has been significantly more
+difficult than OCR of modern texts mainly due to idiosyncrasies and wide
 variability of font, layout, language, orthography of printed texts before ca.
-1850. Most OCR engines are optimized towards supporting the widest possible set
+1850. However, common OCR engines are optimized towards supporting the widest possible set
 of modern text ("OmniFont OCR") with little or no facilities for the user to
-adapt the engine. With the technologies around OCR embracing Deep Learning with
-neural networks (NN), there have been various efforts to develop Free Software
-OCR engines that can be adapted to different types of documents by training
-specific models based on manually labeled ground truth (GT). What these
-engines offer in terms of implementation finesse they lack in interoperability
-and standardization. In this paper, we present okralact, a set of specifications
-and a prototypical implementation of an engine-agnostic framework for training
+adapt the engine. Since OCR technologies began embracing deep neural networks, various Free Software
+OCR engines are now available that can in principle be adapted to different types of documents by training specific models from ground truth (GT). What these
+engines offer in terms of implementation finesse, they lack in interoperability
+and standardization. To overcome this, we developed okralact, a set of specifications
+and a prototypical implementation of an engine-agnostic system for training
 Open Source OCR engines like tesseract, ocropus, kraken or calamari. We briefly
-compare these engines, describe the specifications and software we have been
-developing and outline the challenges in and our plans to contribute to
-a more accessible and interoperable Open Source OCR ecosystem.
+compare these engines, describe the specifications and functionality of okralact 
+and outline how a turn-key system for adapting Open Source OCR engines can contribute 
+to better OCR of historical documents and also to the wider OCR ecosystem.
 
 \end{abstract}
 
@@ -92,9 +92,9 @@ OCR, ocropus, kraken, calamari, tesseract
 \section*{Introduction}
 
 
-The rise of deep learning in the last decade has been a game-changer for image
+The rise of deep learning has been a game-changer for image
 processing, text recognition and layout analysis, the key parts of optical
-character recognition (OCR) workflows. The text recognition technology in
+character recognition (OCR) workflows. Text recognition technology in
 particular has seen a paradigm-shift, away from a combination of character
 segmentation and pattern-based detection, towards
 segmentation-free recognition based on trained neural networks
@@ -123,6 +123,8 @@ model to be trained on pairs of images and ground truth text without explicitly
 aligning between them. It both saves the efforts of segmenting the images into
 characters and avoids the possible errors introduced in this process.
 
+% CN: We should definitely scan the last 2-3 ICDAR, DAS for relevant publications and include most important here, the reviewers will be looking for this early on in the paper. ICDAR2009/2011 were still dominated by HMMs, DTW etc. There are some relevant papers in ICDAR2013 (https://dblp.org/db/conf/icdar/icdar2013.html) though, for example - heavily cited! - \cite{breuel2013high} and \cite{ul2013can}. More recent editions of ICDAR are full with NNs...an interesting one is e.g. \cite{puigcerver2017multidimensional} or \cite{7333935}. Now coming to DAS, while e.g. DAS2014 hard hardly any NN stuff (https://dblp.org/db/conf/das/das2014.html), DAS2016 also saw NNs appear in every other paper (https://dblp.org/db/conf/das/das2016.html), I would pick \cite{7490115}, \cite{7490087}, \cite{DBLP:conf/das/Ul-HasanBD16} as remotely relevant. 
+
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
 %OCR to recognize the text in images.
@@ -141,12 +143,12 @@ assess what kind of data a model was trained on after the fact.
 To overcome these obstacles to adoption, we propose
 \textit{okralact}, a flexible set of specifications and a software
 prototype to harmonize the input data, parameterization and
-provenance tracking of different engines.
+provenance tracking of training different engines.
 
 \section*{Open Source OCR}
 
 There have been various Free Software projects that implement NN technologies
-for OCR. In our work we focus on the four most prominent projects: tesseract, ocropus,
+for OCR. Here we only consider the four most prominent projects: tesseract, ocropus,
 kraken and calamari.\footnote{All of the above are released with the Apache 2.0 license.}
 
 \begin{table}[b]
@@ -176,6 +178,7 @@ tesseract & 102          & 1985          & 27135        & 143251 \\
 \label{tab:stats}
 \end{table}
 
+% CN: I would start this section with tesseract and then continue with OCRopus and its forks. 
 \subsection*{OCRopus}
 
 The brainchild of Thomas Breuel and first released in 2007, OCRopus
@@ -196,7 +199,7 @@ original Python version.
 % CN: did the clstm part in ocropy introduce the NN? How can/should we refer to the current work from Tom, e.g. the PyTorch implementation? Furthermore, to satisfy the "state-of-the-art" we should say a few words about those who already successfully trained and redistributed models for historical documents. I can think of Uwe Springmann, Jesper Zedlitz, ?
 % kba: No, clstm was the reimplementation of the LSTM from ocropy in C++. At this point it's effectively dead and clstm-trained models never gained traction beyond kraken < 1.0.
 % kba: Ocropy2 ist alpha, hat sich seit langem nichts getan <del>gibt keine Veroeffentlichung dazu</del>.
-% kba: About trianedtrained models: Bruce Roberts polytonic greek models come to mind, also https://github.com/tmbdev/ocropy/wiki/Models. Plus th
+% kba: About trained models: Bruce Roberts polytonic greek models come to mind, also https://github.com/tmbdev/ocropy/wiki/Models. Plus th
 
 \subsection*{tesseract}
 
@@ -208,12 +211,15 @@ is the most well-known and most widely used Open Source OCR engine
 (c.f. Table \ref{tab:stats}).
 
 While earlier versions of tesseract did contain training facilities that
-were used in the context of OCR of historical documents, e.g. in the eMOP and
-IMPACT projects, these had severe limitations and required cumbersome
+were used in the context of OCR of historical documents, e.g. in the eMOP
+\cite{doi:10.1093/llc/fqv062} and IMPACT \cite{PSNC} projects, these had
+severe limitations and required cumbersome
 character-based training with little positive effect on OCR accuracy
-for historical documents.\cite{doi:10.1093/llc/fqv062}
+for historical documents.
 
-With the release of version 4.0.0 in 2018, tesseract introduced a trainable
+% CN: The release date is very misleading here, LSTM-RNN tesseract has been around (and in use) for much longer, usually one claims Ray Smith's DAS2016 tutorial as the "release": https://github.com/tesseract-ocr/docs/tree/master/das_tutorial2016
+
+With the first alpha of version 4.0.0 released in 2016, tesseract introduced a trainable
 engine based on LSTM NN. While still a very involved, multi-step process, the
 improved accuracy and fine-tuning to specific corpora outweighs the effort.
 There have been efforts to streamline the training process, e.g.
@@ -275,11 +281,11 @@ improvements with regard to computation speed than training on CPU devices.
 Table \ref{tab:model_param1} shows that different OCR engines provides
 different levels of freedom for the users to design their own neural network
 structures. OCRopus does not support CNN as the feature extractor for raw
-images. The raw image features are directly feed into the LSTM layers. It only
+images. The raw image features are directly fed into the LSTM layers. It only
 allows users to choose whether to use bidirectional or unidirectional LSTM
 layer and the size of hidden states. The number of LSTM layers are fixed.
 Tesseract, kraken and Calamari provide more modeling options to the users. They
-allow the users to add arbitrary number of CNN , pooling, dropout and RNN
+allow the users to add arbitrary number of CNN, pooling, dropout and RNN
 layers. All three engines support user specified kernel size and output size in
 CNN layer, but tesseract and kraken also provide additional options for
 activation functions.
@@ -289,7 +295,7 @@ activation functions.
 \hline
 Layers                   & Parameters   & OCRopus              & kraken   & Calamari & tesseract \\ \hline
 % CNN Layer& & NA & Yes & Yes & Yes  \\
-\multirow{ 3}{*}{CNN}    & kernel size  & \multirow{ 3}{*}{NA} & Y        & Y        & Y         \\
+\multirow{ 3}{*}{CNN}    & kernel size  & \multirow{3}{*}{NA} & Y        & Y        & Y         \\
                          & activation   &                      & Y        & N        & Y         \\
                          & output size  &                      & Y        & Y        & Y         \\ \hline
 \multirow{2}{*}{Pooling} & kernel size  & \multirow{2}{*}{NA}  & Y        & Y        & Y         \\
@@ -383,8 +389,8 @@ Therefore, no engine currently supports any of the established OCR
 file formats (ALTO, hOCR, PAGE-XML...). We aim to change this by
 reusing as input format the OCRD-ZIP GT format developed within
 OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.} This
-allows users to use advanced tools for GT creation, such as PRIMA
-Labs' Aletheia.
+allows users to use advanced tools for GT creation, such as e.g. 
+PRImA Research Labs' Aletheia \cite{clausner2011aletheia}.
 
 Secondly, we compared the parameterization of the tools and
 identified a set of common parameters that are equivalent across
@@ -398,8 +404,8 @@ can use this schema to validate input configurations to the
 training engine, to generate documentation such as help pages, user
 interface hints and auto-completion.
 
-Lastly, we took a look at how trained models are distributed and
-defined another BagIt profile for describing trained models. This
+Lastly, we look at how trained models are distributed and
+define another BagIt profile for describing trained models. This
 format allows bundling not only the (engine-specific) models but
 also the configuration that was used to train it and optionally the
 GT the model was based on. This allows broader reuse of models
@@ -444,6 +450,7 @@ training command for the specified OCR engine.
 \label{fig:framework}
 \end{figure*}
 
+% CN: Before we conclude, I would expect another section with some minimal evaluation/results discussion, e.g. was it (not?) possible to a) train models for all four engines and b) using the same data according to specs with okralact and c) how do these models compare to ones that are shipped with each engine? 
 \section*{Challenges and Future Work}
 
 % * Adapt diagram \url{https://docs.google.com/presentation/d/1jyV7pWGkIgtIrc9uJ5jbUwNthOk0JSUgT_tA2QudwkA/edit#slide=id.p}
