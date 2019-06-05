@@ -124,6 +124,7 @@ aligning between them. It both saves the efforts of segmenting the images into
 characters and avoids the possible errors introduced in this process.
 
 % CN: We should definitely scan the last 2-3 ICDAR, DAS for relevant publications and include most important here, the reviewers will be looking for this early on in the paper. ICDAR2009/2011 were still dominated by HMMs, DTW etc. There are some relevant papers in ICDAR2013 (https://dblp.org/db/conf/icdar/icdar2013.html) though, for example - heavily cited! - \cite{breuel2013high} and \cite{ul2013can}. More recent editions of ICDAR are full with NNs...an interesting one is e.g. \cite{puigcerver2017multidimensional} or \cite{7333935}. Now coming to DAS, while e.g. DAS2014 hard hardly any NN stuff (https://dblp.org/db/conf/das/das2014.html), DAS2016 also saw NNs appear in every other paper (https://dblp.org/db/conf/das/das2016.html), I would pick \cite{7490115}, \cite{7490087}, \cite{DBLP:conf/das/Ul-HasanBD16} as remotely relevant. 
+% kba: Rui can you elaborate more on the state of the art from ICDAR/DAS papers?
 
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
@@ -178,6 +179,39 @@ tesseract & 102          & 1985          & 27135        & 143251 \\
 \label{tab:stats}
 \end{table}
 
+\subsection*{tesseract}
+
+tesseract \cite{4376991} was one of the first Free Software OCR
+engine and remains one of the oldest OCR engines still in
+development. Consistently helmed by Ray Smith, tesseract has gone
+through various iterations and partial rewrites and changing
+ownership. Open Source since 2005 and sponsored by Google since
+2006, tesseract is the most well-known and most widely used Open
+Source OCR engine (c.f. Table \ref{tab:stats}).
+
+While earlier versions of tesseract did contain training facilities
+that were used in the context of OCR of historical documents, e.g.
+in the eMOP \cite{doi:10.1093/llc/fqv062} and IMPACT \cite{PSNC}
+projects, these had severe limitations and required cumbersome
+character-based training with little positive effect on OCR
+accuracy for historical documents.
+
+% CN: The release date is very misleading here, LSTM-RNN tesseract
+% has been around (and in use) for much longer, usually one claims
+% Ray Smith's DAS2016 tutorial as the "release":
+% https://github.com/tesseract-ocr/docs/tree/master/das_tutorial2016
+
+With the first alpha of version 4.0.0 released in 2016, tesseract introduced a trainable
+engine based on LSTM NN. While still a very involved, multi-step process, the
+improved accuracy and fine-tuning to specific corpora outweighs the effort.
+There have been efforts to streamline the training process, e.g.
+ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
+
+% CN: Also here we can say sth about training tesseract. There is e.g. eMOP
+% \cite{doi:10.1093/llc/fqv062} where we failed training tesseract 3
+% successfully for historic documents. Obviously we should mention ocrd-train
+% here too.
+
 % CN: I would start this section with tesseract and then continue with OCRopus and its forks. 
 \subsection*{OCRopus}
 
@@ -200,35 +234,6 @@ original Python version.
 % kba: No, clstm was the reimplementation of the LSTM from ocropy in C++. At this point it's effectively dead and clstm-trained models never gained traction beyond kraken < 1.0.
 % kba: Ocropy2 ist alpha, hat sich seit langem nichts getan <del>gibt keine Veroeffentlichung dazu</del>.
 % kba: About trained models: Bruce Roberts polytonic greek models come to mind, also https://github.com/tmbdev/ocropy/wiki/Models. Plus th
-
-\subsection*{tesseract}
-
-tesseract \cite{4376991} was the first Free Software OCR engine and remains one of
-the oldest OCR engines still in development. Consistently helmed by Ray Smith,
-tesseract has gone through various iterations and partial rewrites and changing
-ownership. Open Source since 2005 and sponsored by Google since 2006, tesseract
-is the most well-known and most widely used Open Source OCR engine
-(c.f. Table \ref{tab:stats}).
-
-While earlier versions of tesseract did contain training facilities that
-were used in the context of OCR of historical documents, e.g. in the eMOP
-\cite{doi:10.1093/llc/fqv062} and IMPACT \cite{PSNC} projects, these had
-severe limitations and required cumbersome
-character-based training with little positive effect on OCR accuracy
-for historical documents.
-
-% CN: The release date is very misleading here, LSTM-RNN tesseract has been around (and in use) for much longer, usually one claims Ray Smith's DAS2016 tutorial as the "release": https://github.com/tesseract-ocr/docs/tree/master/das_tutorial2016
-
-With the first alpha of version 4.0.0 released in 2016, tesseract introduced a trainable
-engine based on LSTM NN. While still a very involved, multi-step process, the
-improved accuracy and fine-tuning to specific corpora outweighs the effort.
-There have been efforts to streamline the training process, e.g.
-ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
-
-% CN: Also here we can say sth about training tesseract. There is e.g. eMOP
-% \cite{doi:10.1093/llc/fqv062} where we failed training tesseract 3
-% successfully for historic documents. Obviously we should mention ocrd-train
-% here too.
 
 \subsection*{kraken}
 
