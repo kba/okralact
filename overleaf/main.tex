@@ -227,7 +227,7 @@ GT data. Breuel has since moved on to create clstm, a better
 performing LSTM implementation \cite{DBLP:conf/icdar/Breuel17}, and
 ocropy2, a rewrite of OCRopus based on CUDA and the PyTorch Deep
 Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither has
-reached the same traction in the Free Software community as the
+yet reached the same traction in the Free Software community as the
 original Python version.
 
 % CN: did the clstm part in ocropy introduce the NN? How can/should we refer to the current work from Tom, e.g. the PyTorch implementation? Furthermore, to satisfy the "state-of-the-art" we should say a few words about those who already successfully trained and redistributed models for historical documents. I can think of Uwe Springmann, Jesper Zedlitz, ?
@@ -273,7 +273,7 @@ other three engines are all written in Python. Tesseract and OCRopus
 implement the neural networks as well as the inference from scratch without
 utilizing any existing deep learning libraries. Kraken uses PyTorch as its
 backend deep learning engines. Calamari provides the option of backend to the
-users, but currently it only supports Tensorflow.
+users, but currently it only supports TensorFlow.
 
 %\subsubsection*{Library Dependencies}
 \subsubsection*{Hardware Requirements}
@@ -351,6 +351,7 @@ Early Stop                     &         & N       & Y      & Y        & Y      
 \caption{Training Options for Open Source OCR engines.}
 \label{tab:training_options}
 \end{table}
+
 \subsubsection*{Fine Tuning}
 
 All four engines provide a user interface for fine-tuning an
@@ -368,8 +369,12 @@ features.
 
 % compare the command line steps of training different engines
 % ocrd-train
+% kba: Rui?
 
 \section*{okralact}
+
+\textit{Okralact} is both a set of specifications and a prototype
+implementation.
 
 \subsection*{Specifications}
 
@@ -455,20 +460,63 @@ training command for the specified OCR engine.
 \label{fig:framework}
 \end{figure*}
 
-% CN: Before we conclude, I would expect another section with some minimal evaluation/results discussion, e.g. was it (not?) possible to a) train models for all four engines and b) using the same data according to specs with okralact and c) how do these models compare to ones that are shipped with each engine? 
+\section{Preliminary evaluation}
+
+% CN: Before we conclude, I would expect another section with some
+% minimal evaluation/results discussion, e.g. was it (not?)
+% possible to a) train models for all four engines and b) using the
+% same data according to specs with okralact and c) how do these
+% models compare to ones that are shipped with each engine? 
+
+% kba: Rui?
+
 \section*{Challenges and Future Work}
 
-% * Adapt diagram \url{https://docs.google.com/presentation/d/1jyV7pWGkIgtIrc9uJ5jbUwNthOk0JSUgT_tA2QudwkA/edit#slide=id.p}
-%* Describe HTTP API
-%   * Draft a `/evaluation` endpoint taking evaluation config, model, groundTruth and %returning measures like CER, WER ...
+% * [X] Adapt diagram \url{https://docs.google.com/presentation/d/1jyV7pWGkIgtIrc9uJ5jbUwNthOk0JSUgT_tA2QudwkA/edit#slide=id.p}
+% * [X] Describe HTTP API
+%   * [X] Draft a `/evaluation` endpoint taking evaluation config, model, groundTruth and %returning measures like CER, WER ...
 
 % Expanded Common API by engine developers cooperating
 
-% More flexible choice of input data (multiple works, individual lines from individual pages etc.)
+Though we strived to harmonize the engine APIs into a common API,
+there still remain many engine-specific parameters. Therefore,
+effective use of \textit{okralact} at this stage requires knowledge
+of the individual engine's implementation, making the common API a
+``leaky abstraction''. We hope to encourage engine developers and
+intend to involve ourselves in discussions about unified
+terminology, data types and exchange formats to improve engine
+interoperability and therefore make \textit{okralact} more
+accessible to non-expert users.
 
 % Cleanly defined evaluation measures necessary (no more ISRI or character-counting CER)
 
+Furthermore, there is a sore lack of easy to use tools with well
+defined measures for the evaluation of OCR. Traditionally, the
+character error rate (CER) and to a lesser extent word error rate
+(WER) have been the ratios to measure accuracy. However, these
+measures require perfect GT and results can be misleading for
+breakdowns in preprocessing such as segmentation errors or
+technical flaws in model preparation such as characters not part
+of the encoding.
+% kba: Can we cite some State of the Art evaluation papers here to
+% show that this is being worked on?
+
+% More flexible choice of input data (multiple works, individual lines from individual pages etc.)
+
 % Integration of training workflow and recognition workflows
+
+Lastly, we strive for a better integration of training and
+recognition workflows. As \textit{okralact} is part of the OCR-D
+ecosphere, which has been developing components of a full-stack
+OCR workflow, including image preprocessing, layout detection, font
+detection, layout classification, recognition and language-model
+post-processing, we intend to integrate \textit{okralact} into the
+OCR-D specification and reference implementation. This will allow
+users to pick and choose the best Free Software implementations for
+the hole gamut of text recognition needs.
+
+% kba: Plug our module projects by citing papers here.
+
 
 %\section*{References}
 
