@@ -1,7 +1,11 @@
 % ---------------------------------------------------------------------- %
 % TODO
 %
-% - spelling of ocropy, OCRopus, OCRopy
+% - spelling and capitalization of
+%   - ocropy, OCRopus, OCRopy
+%   - kraken, tesseract
+%   - calamari (OCR)
+%   - common API
 %
 % ----------------------------------------------------------------------
 
@@ -182,7 +186,7 @@ tesseract & 102          & 1985          & 27135        & 143251 \\
 \subsection*{tesseract}
 
 tesseract \cite{4376991} was one of the first Free Software OCR
-engine and remains one of the oldest OCR engines still in
+engines \cite{Rice1995TheFA} and remains one of the oldest OCR engines still in
 development. Consistently helmed by Ray Smith, tesseract has gone
 through various iterations and partial rewrites and changing
 ownership. Open Source since 2005 and sponsored by Google since
@@ -202,7 +206,7 @@ accuracy for historical documents.
 % https://github.com/tesseract-ocr/docs/tree/master/das_tutorial2016
 
 With the first alpha of version 4.0.0 released in 2016, tesseract introduced a trainable
-engine based on LSTM NN. While still a very involved, multi-step process, the
+engine based on LSTM NN.\cite{smith2016tesseract} While still a very involved, multi-step process, the
 improved accuracy and fine-tuning to specific corpora outweighs the effort.
 There have been efforts to streamline the training process, e.g.
 ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.}.
@@ -237,13 +241,13 @@ original Python version.
 
 \subsection*{kraken}
 
-kraken \cite{DBLP:journals/corr/RomanovMSK17} was started as a fork of ocropy
-by Benjamin Kiessling in 2015 to rectify a number of issues while preserving
-(mostly) functional equivalence. While retaining many of the algorithms around
-OCR, the actual recognition engine has been based on the Torch machine learning
-framework since version 2.0 and can not reasonably be considered a fork of
-ocropy anymore. kraken has been having a particular impact on OCR
-of Arabic and is the technical foundation of the Open Islamic Texts
+kraken \cite{DBLP:journals/corr/RomanovMSK17} started as a fork of ocropy
+by Benjamin Kiessling in 2015 to rectify a number of implementation and usability
+issues while preserving (mostly) functional equivalence. While retaining many of
+the algorithms around OCR, the actual recognition engine has been based on the
+Torch machine learning framework since version 2.0 and can not reasonably be
+considered a fork of ocropy anymore. kraken has been having a particular impact
+on OCR of Arabic and is the technical foundation of the Open Islamic Texts
 Initiative \cite{miller_romanov_savant_2018}.
 
 % CN: As far as I am aware, most models for kraken are either from Ben himself
@@ -269,31 +273,37 @@ technical details of implementation and the interfaces provided to the users.
 \subsubsection*{Implementation}
 
 As shown in Table \ref{tab:basic}, tesseract is implemented in C++ while the
-other three engines are all written in Python. Tesseract and OCRopus
+other three engines are all written in Python. Tesseract and ocropy
 implement the neural networks as well as the inference from scratch without
-utilizing any existing deep learning libraries. Kraken uses PyTorch as its
-backend deep learning engines. Calamari provides the option of backend to the
-users, but currently it only supports TensorFlow.
+utilizing any existing deep learning libraries. Kraken uses PyTorch as the
+deep learning backend. Calamari allows using different deep learning backends,
+though currently only the TensorFlow backend is implemented.
 
 %\subsubsection*{Library Dependencies}
+
 \subsubsection*{Hardware Requirements}
 
 Both kraken and kalamari support GPU training, which offers significant
 improvements with regard to computation speed than training on CPU devices.
 
+% kba: Rui, which engines benefit from GPU in recognition?
+
 \subsubsection*{Model Parameters}
 
-Table \ref{tab:model_param1} shows that different OCR engines provides
+Table~\ref{tab:model_param1} illustrates that different OCR engines provide
 different levels of freedom for the users to design their own neural network
 structures. OCRopus does not support CNN as the feature extractor for raw
 images. The raw image features are directly fed into the LSTM layers. It only
 allows users to choose whether to use bidirectional or unidirectional LSTM
-layer and the size of hidden states. The number of LSTM layers are fixed.
-Tesseract, kraken and Calamari provide more modeling options to the users. They
-allow the users to add arbitrary number of CNN, pooling, dropout and RNN
+layer and the size of hidden states. The number of LSTM layers is fixed.
+Tesseract, kraken and Calamari provide more modeling options to the user. They
+allow users to add arbitrary numbers of CNN, pooling, dropout and RNN
 layers. All three engines support user specified kernel size and output size in
 CNN layer, but tesseract and kraken also provide additional options for
 activation functions.
+
+% kba: Rui can we substantiate these features with citations? "Pooling" can mean
+% a lot of things in different contexts, e.g.
 
 \begin{table}[bt]
 \begin{tabular}{llllll}
@@ -319,16 +329,16 @@ Output                   & output size  & N                    & Y        & N   
 
 \subsubsection*{Training Parameters}
 
-These OCR engines also provide different flexibility to tune the training
-parameters such as the learning rate, optimizer and whether to use early
-stopping, as summarized in Table \ref{tab:training_options}. For different
+The four OCR engines provide different levels of flexibility to fine-tune training
+parameters such as the learning rate, which optimizer to use or whether to stop early,
+as summarized in Table~\ref{tab:training_options}. For different
 optimizers, different OCR engines also provide different ways to adjust
 optimizer parameters. All four engines allow the user to specify how long the
 model should be trained in terms of maximum number of training samples, epochs
 or iterations. Kraken, Calamari and tesseract also support early stopping,
 i.e., stop training earlier than the specified ending point, when the model
 performance satisfies some given conditions. For example, kraken supports early
-stopping when the model performance improvement is not significant. Tesseract
+stopping when the model performance improvement is not significant any more. Tesseract
 stops training when the error rate is lower than a user specified target error
 rate. Calamari stops training when the model performance is continuously
 getting worse.
@@ -361,39 +371,59 @@ while the other three engines also allow the user to modify the
 structure of an existing model. Users can cut the head off the
 network at a given layer and append a new model structure after it.
 For example, when a user wants to train an OCR model for a new
-language which shares lots of alphabets with the existing model,
+language which shares lots of characters with the existing model,
 the bottom CNN layers can be reused to extract similar image
 features.
 
+% kba: "cut the head off" is a bit jarring IMHO
+% kba: Continuing training of an existing model is pretty tricky in
+% my (support) experience. Rui, can you say some more on how well
+% works with different engines? I.e. is it (currently) a viable approach to
+% start with the default model and expand on that with new data?
+
 \subsubsection*{Tooling / User Interfaces}
 
-Most of the OCR engines provide simple interfaces for the users to
-train OCR models, although they varies in the set of adjustable
-parameters provided to the users. However, training tesseract is
-more complicated compared to the other three engines. Ocropus,
-Kraken and Calamari all requires one single command line to train
-the model, while Tesseract calls for more complicated preprocessing
-steps before training. For example, Tessearct 4 requires the users
+All examined OCR engines provide basic user interfaces to
+train OCR models, although they vary in the set of adjustable
+parameters and ease of use. Calamari and kraken, due their lineage,
+provide some tools similar to ocropy or advise to use ocropy's tools
+directly. The ocropy codebase is not developed further hence the interfaces
+are frozen in the state of ca. 2015, also to avoid breaking legacy OCR
+workflows. Both kraken and calamari significantly improve the command
+line interfaces. While kraken allows for elegant and terse calls by
+removing configurability of obsolete or little-used features, Calamari
+exposes as much of the power to the user, resulting in a long list
+of parameters.
+
+% kba: not very well phrased but you know
+
+Training tesseract is
+significantly more complicated than training the other three engines. Ocropus,
+Kraken and Calamari all require a single command line call to train
+a model, while the process with tesseract is more involved.
+For example, Tesseract requires the users
 to generate bounding boxes for each text line although it does not
-really need individual char coordinates. The character set is then
+really need individual character coordinates. The character set is then
 explicitly generated from all the bounding boxes files with the
 command ``\textit{unicharset\_extractor}''. The training data are
 provided to the training interface via ``lstmf'' files, where each
 file is serialized document data containing an image and the
-corresponding groundtruth text. These files are generated via the
-command ``\textit{tessearct}''. Then a traineddata file is generated
+corresponding GT text. These files are generated via the
+command ``\textit{tesseract}''. Then a traineddata file is generated
 to obtain all the information it needs on the language to be
 learned via ``\textit{combine\_lang\_model}'' command. Finally,
 command ``\textit{lstmtraining}'' is used to train an OCR model with
 the traineddata file and the list of lstmf files as input.
+
+% kba this is super-detailed. Maybe hyper-detailed? Can we rephrase that
+% without mentioning all the tools involved?
+
 Ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}} is
 part of the OCR-D project that implements a training workflow for
 Tesseract 4 as a Makefile for dependency tracking and building the
 required software from source.  
 
-% compare the command line steps of training different engines
-% ocrd-train
-% kba: Rui?
+% kba: We plugged it before, one plug per paper for ocrd-train seems plenty...
 
 \section*{okralact}
 
@@ -458,23 +488,27 @@ parameterization, intermediary evaluation results and log files.
 As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
 server are implemented using Flask, a lightweight web application framework.
-Users could upload the training or evaluation dataset and configuration files
-specifying the OCR engine and the parameters    from the client end. The user
-could also submit a request of training an OCR    model with the selected
-dataset and configuration file to the server. After the job is submitted, the
-user could check job status. After a model is trained,    the user could
-download the model to client machine. The user could also submit an evaluation
-request with a selected evaluation dataset and a selected model.
+Users can upload training or evaluation datasets and configuration files
+specifying the OCR engine(s) to use and the parameters. The user
+can also submit a request of training an OCR model with the selected
+dataset and configuration file. After the job is submitted, the
+user can check the job progress. After the training of a model is finished, it can be
+downloaded. The user can also submit an evaluation
+request with an evaluation dataset and a selected model and receive TODO.
 
-To reduce the response time of the HTTP service, all the training or evaluation
-jobs submitted to the server are handled by task queues in the background.
-Redis Queue is utilized as the backend on the server to process job requests
-sent from the     client end. It is a Python library built on top of Redis that
-executes work  outside an HTTP request-response cycle.  It would put job
-requests into the      queue of a given worker, which serves in
-first-in-first-out order. When a job   gets to run, it would call the common
+% kba: Rui what does the user receive for the evaluation request?
+
+Since training is a long-running process, HTTP communication must be asynchronous,
+i.e., all the training or evaluation
+jobs submitted to the server are handled in the background by Redis Queue,
+a Python library built on top of Redis that
+executes the work outside an HTTP request-response cycle.  It would put job
+requests into the queue of a given worker, which serves in
+first-in-first-out order. When a job gets to run, it would call the common
 API for different OCR engines to interpret the configuration files into the
 training command for the specified OCR engine.
+
+% kba: Rui what about evaluation jobs?
 
 \begin{figure*}[ht!]
         \begin{center}
@@ -485,6 +519,9 @@ training command for the specified OCR engine.
 \end{figure*}
 
 \section{Preliminary evaluation}
+
+With the current state of okralact, it is possible to describe the training process
+using the common API
 
 % CN: Before we conclude, I would expect another section with some
 % minimal evaluation/results discussion, e.g. was it (not?)
