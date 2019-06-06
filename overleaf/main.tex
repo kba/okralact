@@ -367,6 +367,30 @@ features.
 
 \subsubsection*{Tooling / User Interfaces}
 
+Most of the OCR engines provide simple interfaces for the users to
+train OCR models, although they varies in the set of adjustable
+parameters provided to the users. However, training tesseract is
+more complicated compared to the other three engines. Ocropus,
+Kraken and Calamari all requires one single command line to train
+the model. while Tesseract calls for more complicated preprocessing
+steps before training. For example, Tessearct 4 requires the users
+to generate bounding boxes for each text line although it does not
+really need individual char coordinates. The character set is then
+explicitly generated from all the bounding boxes files with the
+command ``\textit{unicharset\_extractor}''. The training data are
+provided to the training interface via ``lstmf'' files, where each
+file is serialized document data containing an image and the
+corresponding groundtruth text. These files are generated via the
+command ``\textit{tessearct}''. Then a traineddata file is generated
+to obtain all the information it needs on the language to be
+learned via ``\textit{combine\_lang\_model}'' command. Finally,
+command ``\textit{lstmtraining}'' is used to train an OCR model with
+the traineddata file and the list of lstmf files as input.
+Ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.} is
+part of the OCR-D project that implements a training workflow for
+Tesseract 4 as a Makefile for dependency tracking and building the
+required software from source.  
+
 % compare the command line steps of training different engines
 % ocrd-train
 % kba: Rui?
