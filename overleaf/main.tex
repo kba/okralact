@@ -37,8 +37,8 @@ okralact - a multi-engine Open Source OCR training system \\
 konstantin.baierer@sbb.spk-berlin.de}
 \and
 \IEEEauthorblockN{2\textsuperscript{nd} Rui Dong}
-\IEEEauthorblockA{\textit{Institut für Informatik} \\
-\textit{Leipzig University}\\
+\IEEEauthorblockA{\textit{Khoury College of Computer and Information Science} \\
+\textit{Northeastern University}\\
 dongrui@ccs.neu.edu}
 \and
 \IEEEauthorblockN{3\textsuperscript{rd} Clemens Neudecker}
@@ -141,7 +141,7 @@ characters and avoids the possible errors introduced in this process.
 % \cite{ul2013can}. More recent editions of ICDAR are full with
 % NNs...an interesting one is e.g.
 % \cite{puigcerver2017multidimensional} or \cite{7333935}. 
-% kba: Rui can you elaborate more on the state of the art from ICDAR/DAS papers?
+% kba: Clemens can you elaborate more on the state of the art from ICDAR/DAS papers?
 
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
@@ -167,7 +167,12 @@ provenance tracking of training different OCR engines.
 OCR-D\footnote{http://ocr-d.de/eng}, a composition of a
 coordination and several module projects established with support
 from Deutsche Forschungsgemeinschaft (German Research Foundation,
-DFG) to ...
+DFG). OCR-D has the aim to examine available technologies for OCR
+and via the definition of standards and best-practices in
+combination with the adaptation and development of state-of-the-art
+NN-based methods contribute to improving the OCR process for
+mass-digitization of printed historical
+material.\cite{neudecker2019datech}  
 
 % TODO
 
@@ -178,8 +183,8 @@ II provides an overview of the currently most prominent Free
 Software OCR engines and discusses their training features in more
 depth. Section III introduces \textit{okralact} with its
 specification and the prototype implementation. Preliminary
-evaluation results are presented in section IV. Challenges and
-future work are explained in section V. 
+evaluation results are presented in section IV. We conclude by outlining 
+remaining challenges and future work in section V. 
 
 \section{Open Source OCR}
 
@@ -187,18 +192,18 @@ There have been various Free Software projects that implement NN technologies
 for OCR. For the scope of this work, we only consider the four most prominent projects: tesseract, ocropus, kraken and calamari, all of which are released under the Apache License 2.0.
 
 % CN: I think I could live without table 1 since most of the info here is also covered in each paragraph 
-\begin{table}[b]
-\begin{tabular}{llll}
-\hline
-Engine    & Main Developer     & Stack                      & Development \\ \hline
-OCRopus   & Tom Breuel         & Python                     & stale       \\
-kraken    & Benjamin Kiessling & Python, Torch              & active      \\
-Calamari  & Christoph Wick     & Python, Tensorflow         & active      \\
-tesseract & Ray Smith          & C++                        & active
-\end{tabular}
-\caption{Basic properties of Open Source OCR engines}
-\label{tab:basic}
-\end{table}
+%\begin{table}[b]
+%\begin{tabular}{llll}
+%\hline
+%Engine    & Main Developer     & Stack                      & Development \\ \hline
+%OCRopus   & Tom Breuel         & Python                     & stale       \\
+%kraken    & Benjamin Kiessling & Python, Torch              & active      \\
+%Calamari  & Christoph Wick     & Python, Tensorflow         & active      \\
+%tesseract & Ray Smith          & C++                        & active
+%\end{tabular}
+%\caption{Basic properties of Open Source OCR engines}
+%\label{tab:basic}
+%\end{table}
 
 \begin{table}[b]
 \begin{tabular}{lllll}
@@ -254,12 +259,16 @@ Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither has
 yet reached the same traction in the Free Software community as the
 original Python version.
 
+% TODO: Mention Ocrocis?
+
 % CN: we should those who already successfully trained and
 % redistributed models for historical documents. I can think of Uwe
 % Springmann, Jesper Zedlitz, ?
+
 % kba: About trained models: Bruce Roberts polytonic greek models
 % come to mind, also https://github.com/tmbdev/ocropy/wiki/Models.
-% Plus th
+
+% kba: We should mention the models trained by others like springmann, zedlitz, the standard models shipped with kraken and ocropy, tessdata_best and tessdata_fast.
 
 \subsection{kraken}
 
@@ -294,7 +303,7 @@ technical details of implementation and the interfaces provided to the users.
 
 \subsubsection{Implementation}
 
-As shown in Table \ref{tab:basic}, tesseract is implemented in C++ while the
+Tesseract is implemented in C++ while the
 other three engines are all written in Python. Tesseract and ocropy
 implement the neural networks as well as the inference from scratch without
 utilizing any existing deep learning libraries. Kraken uses PyTorch as the
@@ -305,7 +314,7 @@ though currently only the TensorFlow backend is implemented.
 
 \subsubsection{Hardware Requirements}
 
-Both kraken and kalamari support GPU training, which offers significant
+Both kraken and calamari support GPU training, which offers significant
 improvements with regard to computation speed compared to training on CPU devices.
 
 % kba: Rui, which engines benefit from GPU in recognition?
@@ -397,10 +406,6 @@ language which shares lots of characters with the existing model,
 the bottom CNN layers can be reused to extract similar image
 features.
 
-% kba: Continuing training of an existing model is pretty tricky in
-% my (support) experience. Rui, can you say some more on how well
-% works with different engines? I.e. is it (currently) a viable approach to
-% start with the default model and expand on that with new data?
 
 \subsubsection{Tooling / User Interfaces}
 
@@ -439,6 +444,16 @@ the traineddata file and the list of lstmf files as input.
 % kba this is super-detailed. Maybe hyper-detailed? Can we rephrase that
 % without mentioning all the tools involved?
 
+\subsubsection{Standard models}
+
+% kba: Wha do you think
+
+% default.pyrnn.gz
+% https://github.com/mittagessen/kraken-models
+% tessdata_best/fast
+% https://github.com/Calamari-OCR/calamari_models
+
+
 \section{okralact}
 
 % CN: be more specific
@@ -466,8 +481,8 @@ naming vary from engine to engine. The engines operate on image and
 text data exclusively without the need for layout information.
 Therefore, no engine currently supports any of the common OCR
 file formats (ALTO, hOCR, PAGE-XML) as input. We aim to change this by
-reusing as input format the OCRD-ZIP GT format developed within
-OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.} This will
+reusing as input format the OCRD-ZIP GT container format developed within
+OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.} \cite{boenig2019datech} This will
 allow users to apply advanced tools for GT creation, such as e.g. 
 PRImA Research Labs' Aletheia \cite{clausner2011aletheia}.
 
@@ -501,11 +516,11 @@ parameterization, intermediary evaluation results and log files.
 %     * Clean up evaluation
 
 \begin{figure*}[ht!]
-        \begin{center}
-     \includegraphics[width=0.8\linewidth]{Figures/Framework.png}
-        \end{center}
-        \caption{\small{Framework of the \textit{okralact} system.}}
-\label{fig:framework}
+    \begin{center}
+        \includegraphics[width=1\linewidth]{Figures/Framework.png}
+    \end{center}
+    \caption{Framework of the \textit{okralact} system.}
+    \label{fig:framework}
 \end{figure*}
 
 \subsection{Prototype}
@@ -521,7 +536,7 @@ dataset and configuration file. After the job is submitted, the
 user can check the job progress. Once the training of a model has
 completed, it can be downloaded. The user can also submit an
 evaluation request with an evaluation dataset and a selected model
-and receive TODO.
+and receive evaluation report.
 
 % kba: Rui what does the user receive for the evaluation request?
 % CN: Looks like currently Levenshtein distance is calculated, for
@@ -544,14 +559,18 @@ training command for the specified OCR engine.
 
 \section{Preliminary results}
 
-With the current state of okralact, it is possible to describe the training process
-using the common API
+With the current state of \textit{okralact}, it is possible to describe the training process
+and  configure the most important aspects of engine configuration with the common API, the 
+engine-specific features with custom parameters. The implementation supports basic
+training with all four engines but does not yet support advanced features like
+n-fold training or training continuation.
 
 % CN: Before we conclude, I would expect another section with some
 % minimal evaluation/results discussion, e.g. was it (not?)
 % possible to a) train models for all four engines and b) using the
 % same data according to specs with okralact and c) how do these
 % models compare to ones that are shipped with each engine? 
+
 
 % kba: Rui?
 
