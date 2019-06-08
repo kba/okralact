@@ -441,11 +441,35 @@ resources to transcribe GT and train models as well as the technical
 challenges involved, the availability and quality of ready-to-use models is 
 essential to the quality of an OCR engine perceived by the bulk of users.
 
-% kba: Wha do you think
+Tesseract has the widest range of pretrained models available of the engines
+supported by okralact. Trained on synthetic data, there are models available
+for a wide variety of languages and scripts, including Fraktur. Since the shift
+to NN-based recognition, two tiers of models are available, tessdata\_best and
+tessdata\_fast, with the latter trading off accuracy for recognition speed. Since
+training is so complex, there are few community-provided models available at this
+moment, if any.
 
-% default.pyrnn.gz
+% citation required for the details on tesseract model GT
+
+The default model provided by OCRopus author Tom Breuel has been trained on
+both synthetic and real GT and has been widely used in both ocropy and kraken.
+Breuel also offers a model for recognition of Fraktur. The OCRopus community
+has been developing models for Old French, Polytonic Greek and Japanese. Uwe
+Springmann has developed a methodology for training document-specific models
+for OCRopus and shared some of his models for historical documents.
+
+Kraken integrates the widest variety of models and model formats,
+supporting not only ocropy and clstm models but also a more efficient
+protobuf-based encoding of ocropy models and, since version 2.0, CoreML-encoded
+models. As part of the architecture, models can be loaded from a GitHub-based
+model repository, offering models for Arabic, Polytonic Greek and German Fraktur.
+
 % https://github.com/mittagessen/kraken-models
-% tessdata_best/fast
+
+Calamari supports only its proprietary model format but uses the same approach
+to model distribution as kraken, offering a GitHub repository with pretrained
+models, mostly targeted towards German in both Antiqua and Fraktur scripts.
+
 % https://github.com/Calamari-OCR/calamari_models
 
 
