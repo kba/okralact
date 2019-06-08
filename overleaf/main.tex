@@ -79,7 +79,7 @@ Optical character recognition (OCR) of historical documents has
 been significantly more difficult than OCR of modern texts
 largely due to idiosyncrasies and wide variability of font,
 layout, language, orthography of printed texts before ca.
-1850. However, common OCR engines are optimized towards
+1850. However, traditional OCR engines were optimized towards
 supporting the widest possible set of modern text ("OmniFont
 OCR") with little or no facilities for the user to adapt the
 engine. Since OCR technologies began embracing deep neural
@@ -91,7 +91,7 @@ they lack in interoperability and standardization. To overcome
 this, we developed okralact, a set of specifications and a
 prototypical implementation of an engine-agnostic system for
 training Open Source OCR engines like tesseract, ocropus,
-kraken or calamari. We briefly compare these engines, describe
+kraken or calamari. We discuss training these engines, describe
 the specifications and functionality of okralact and outline
 how a turn-key system for adapting Open Source OCR engines can
 contribute to better OCR of historical documents and to the
@@ -111,8 +111,7 @@ processing, document layout analysis and text recognition, key components of opt
 character recognition (OCR). Text recognition technology in
 particular has seen a paradigm-shift, away from a combination of character
 segmentation and pattern-based detection, towards
-segmentation-free recognition based on trained neural networks
-(NN).
+segmentation-free recognition based on deep neural networks (NN).
 % Since training from GT is so essential for the process, all NN-based OCR engines
 % offer tools to train new models. However the usability of these training tools
 % varies wildly. Different engines have different assumptions n the kind of input
@@ -140,9 +139,9 @@ characters and avoids the possible errors introduced in this process.
 In the particular context of historical documents and Fraktur fonts, e.g.
 \cite{breuel2013high} have applied RNN with LSTM for OCR and obtained 
 competitive accuracy when compared to ABBYY FineReader, tesseract or OCRopus. 
-An additional benefit that comes with the application of LSTM is the omission 
-of a specific language model or dictionary, both of which are typically sparse 
-for historical language, without trading off recognition accuracy.\cite{ul2013can}
+An additional benefit that comes with the application of LSTM is that there is
+no more the need for a specific language model or dictionary, both of which are 
+typically sparse for historical language, without trading off recognition accuracy.\cite{ul2013can}
 
 %Any NN-based approach involves two steps: Training a model based on manually
 %annotated ground truth (GT) and applying this model to data, in the case of
@@ -158,15 +157,15 @@ own neural networks while others have a fixed model structure. The
 trained models are engine-specific, sometimes even down to a specific
 version of the engine and in most cases, it is very difficult to
 assess what kind of data a model was trained on after the fact. All
-of this has prevented the wider adoption and provision of NN-based OCR models
-for historical printed documents.
+of this has prevented the wider adoption and provision of NN-based 
+OCR models for historical printed documents.
 
 To overcome these obstacles to adoption, we propose
 \textit{okralact}, a flexible set of specifications and a software
 prototype to harmonize the input data, parameterization and
 provenance tracking of training different OCR engines.
 \textit{Okralact} is developed within the context of
-OCR-D\footnote{http://ocr-d.de/eng}, a composition of a
+OCR-D\footnote{http://ocr-d.de/}, a composition of a
 coordination and several module projects established with support
 from Deutsche Forschungsgemeinschaft (German Research Foundation,
 DFG). OCR-D has the aim to examine available technologies for OCR and via the 
@@ -174,10 +173,9 @@ definition of standards and best-practices in combination with the adaptation an
 printed historical material.\cite{neudecker2019datech}  
 
 % TODO
-
 % CN: Outline of the remaining paper - check when final! 
 
-The remainder of this paper is divided into four sections. Section
+The remainder of this paper is divided into three sections. Section
 II provides an overview of the currently most prominent Free
 Software OCR engines and discusses their training features and models 
 in more depth. Section III introduces \textit{okralact} with its
@@ -226,7 +224,7 @@ ownership. Open Source since 2005 and sponsored by Google since
 2006, tesseract is the most well-known and most widely used Open
 Source OCR engine (c.f. Table \ref{tab:stats}).
 
-While earlier versions of tesseract did contain training facilities, 
+While earlier versions of tesseract did include training facilities, 
 these had severe limitations and required cumbersome data preparation and
 character-based training. Attempts in training tesseract for historical documents, e.g.
 by the IMPACT \cite{PSNC} and eMOP \cite{doi:10.1093/llc/fqv062} projects, did not yield 
@@ -249,17 +247,16 @@ Long-Short-Term-Memory (LSTM). OCRopus bundled a set of rudimentary but
 usable command line tools not only to train and apply models but
 also to preprocess images (binarization, deskewing, layout analysis),
 evaluate recognition results and a basic user interface to produce
-GT data. Breuel has since moved on to create clstm, a better
+GT data. Ocrocis is a noteable augmentation of OCRopus, providing best practices and
+additional scripts and automation solutions for training.\cite{springmann2015ocrocis}
+
+Breuel has since moved on to create clstm, a better
 performing LSTM implementation \cite{DBLP:conf/icdar/Breuel17}, and
 ocropy2, a rewrite of OCRopus based on CUDA and the PyTorch Deep
 Learning framework \cite{DBLP:conf/icdar/Breuel17} but neither has
 yet reached the same traction in the Free Software community as the
 original Python version.
 
-Ocrocis is a noteable augmentation of OCRopus, providing best practices and
-additional scripts and automation solutions for training.\cite{springmann2015ocrocis}
-
-% TODO: Mention Ocrocis?
 
 \subsection{kraken}
 
@@ -327,7 +324,7 @@ activation functions.
 \begin{table}[bt]
 \begin{tabular}{llllll}
 \hline
-Layers                   & Parameters   & OCRopus              & kraken   & Calamari & tesseract \\ \hline
+Layers                   & Parameters   & OCRopus              & kraken   & calamari & tesseract \\ \hline
 % CNN Layer& & NA & Yes & Yes & Yes  \\
 \multirow{ 3}{*}{CNN}    & kernel size  & \multirow{3}{*}{NA} & \checkmark        & \checkmark        & \checkmark         \\
                          & activation   &                      & \checkmark        & -        & \checkmark         \\
@@ -354,7 +351,7 @@ as summarized in Table~\ref{tab:training_options}. For different
 optimizers, different OCR engines also provide different ways to adjust
 optimizer parameters. All four engines allow the user to specify how long the
 model should be trained in terms of maximum number of training samples, epochs
-or iterations. Kraken, Calamari and tesseract also support early stopping,
+or iterations. Kraken, calamari and tesseract also support early stopping,
 i.e., stopping training earlier than the specified ending point, when the model
 performance satisfies some given conditions. For example, kraken supports early
 stopping when the model performance improvement is not significant any more. Tesseract
@@ -365,7 +362,7 @@ getting worse.
 \begin{table}[bt]
 \begin{tabular}{llllll}
 \hline
-Parameters                     &         & OCRopus & kraken & Calamari & tesseract \\ \hline
+Parameters                     &         & OCRopus & kraken & calamari & tesseract \\ \hline
 % CNN Layer                      &         & NA      & Yes    & Yes      & Yes       \\
 \multirow{2}{*}{Learning Rate} & overall & -       & \checkmark      & \checkmark        & \checkmark         \\
                                & layer   & -       & -      & -        & \checkmark         \\
@@ -391,34 +388,30 @@ structure of an existing model. Users can cut off the top of the
 network at a given layer and append a new model structure after it.
 For example, when a user wants to train an OCR model for a new
 language which shares lots of characters with the existing model,
-the bottom CNN layers can be reused to extract similar image
-features.
-
+the bottom CNN layers can be reused to extract similar image features.
 
 \subsubsection{Tooling / User Interfaces}
 
 All examined OCR engines provide basic user interfaces to
 train OCR models, although they vary in the set of adjustable
-parameters and ease of use. Calamari and kraken, due their lineage,
+parameters and ease of use. Calamari and kraken, due to their lineage,
 provide some tools similar to ocropy or advise to use ocropy's tools
 directly. The ocropy codebase is not developed further hence the interfaces
 are frozen in the state of ca. 2015, also to avoid breaking legacy OCR
 workflows. Both kraken and calamari significantly improve the command
 line interfaces. While kraken allows for elegant and terse calls by
-removing configurability of obsolete or little-used features, Calamari
+removing configurability of obsolete or little-used features, calamari
 exposes as much of the power to the user, resulting in a long list
 of parameters.
 
 % kba: not very well phrased but you know
 
-Training tesseract is
-significantly more complex than training the other three engines. OCRopus,
-kraken and calamari all require a single command line call to train
+Training tesseract is significantly more complex than training the other three engines. 
+OCRopus, kraken and calamari all require a single command line call to train
 a model, while the process with tesseract is more involved.
-For example, tesseract requires the users
-to generate bounding boxes for each text line although it does not
-really need individual character coordinates. The character set is then
-explicitly generated from all the bounding boxes files with the
+For example, tesseract requires the generation of bounding boxes for each text 
+line although it does not really need individual character coordinates. 
+The character set is then explicitly generated from all the bounding boxes files with the
 command ``\textit{unicharset\_extractor}''. The training data are
 provided to the training interface via ``lstmf'' files, where each
 file is serialized document data containing an image and the
@@ -443,12 +436,12 @@ challenges involved, the availability and quality of ready-to-use models is
 essential to the quality of an OCR engine perceived by the bulk of users.
 
 Tesseract has the widest range of pretrained models available of the engines
-supported by okralact. Trained on synthetic data, there are models available
+supported by \textit{okralact}. Trained on synthetic data, there are models available
 for a wide variety of languages and scripts, including Fraktur. Since the shift
 to NN-based recognition, two tiers of models are available, tessdata\_best and
-tessdata\_fast, with the latter trading off accuracy for recognition speed. Since
-training is so complex, there are few community-provided models available at this
-moment, if any.
+tessdata\_fast, with the latter trading off some accuracy for recognition speed. 
+Since training is so complex, there are no community-provided models known 
+at this moment.
 
 % citation required for the details on tesseract model GT
 
@@ -474,7 +467,8 @@ models, mostly targeted towards German in both Antiqua and Fraktur scripts.
 % https://github.com/Calamari-OCR/calamari_models
 
 Tesseract is the only project that publishes the GT the standard models are
-trained on. In general, provenance information on GT, model structure and training parameters is missing for the standard models of all engines.
+trained on. In general, provenance information on GT, model structure and training 
+parameters is not provided for the standard models of all engines.
 The kraken models are described by a very basic JSON metadata format but not
 deeply enough to recreate the model. Adapting the specifications outlined
 in section \ref{sec:specs}, e.g. by training with the okralact implementation
@@ -485,7 +479,6 @@ making the models more widely usable and sustainable.
 \section{okralact}
 
 
-% TODO: be more specific
 \textit{Okralact} is both a set of specifications and a prototype
 implementation for harmonizing the input data, parameterization and
 provenance tracking of training different OCR engines.
@@ -530,16 +523,14 @@ schema can then be used to validate input configurations to the
 training engine or to generate documentation such as help pages,
 user interface hints and auto-completion.
 
-% CN: Here is the first time BagIt gets mentioned we may need a ref
 Lastly, we look at how trained models are distributed and
-define another BagIt profile for describing trained models. This
-format allows bundling not only the (engine-specific) models but
+define a BagIt \cite{kunze2018bagit} profile for describing trained models. 
+This format allows bundling not only the (engine-specific) models but
 also the configuration that was used to train it and optionally the
-GT that the model was based upon. 
-% CN: rephrase next sentence
-This allows broader reuse of models
-since it contains the provenance of the model in terms of GT used,
-parameterization, intermediary evaluation results and log files.
+GT that the model was based upon. This supports the reuse of models 
+since it combines the provenance of the model in terms of GT and 
+parameterization used, as well as  intermediary evaluation results and 
+log files.
 
 % * OCRD-ZIP GT format (shortly)
 % * JSON schema for parameters / common API
@@ -560,14 +551,14 @@ parameterization, intermediary evaluation results and log files.
 
 As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
-server are implemented using Flask, a lightweight web application framework.
+server are implemented using Flask, a lightweight web application framework for Python.
 Users can upload training or evaluation datasets and configuration files
-specifying the OCR engine(s) and parameters to be used. The user can also
-submit a request of training an OCR model with the selected dataset and
-configuration file. After the job is submitted, the user can check the job
+specifying the OCR engine(s) with the corresponding parameters to be used. 
+The user can also submit a request of training an OCR model with the selected 
+dataset and configuration file. After the job is submitted, the user can check the job
 progress. Once the training of a model has completed, it can be downloaded.
 The user can also submit an evaluation request with an evaluation dataset and
-a selected model and receive evaluation report for the OCR results. 
+a selected model and receive an evaluation report for the OCR results. 
 
 % kba: Rui what does the user receive for the evaluation request?
 % CN: Looks like currently Levenshtein distance is calculated, for
@@ -586,18 +577,21 @@ first-in-first-out order. When a job gets run, it performs a call to the common
 API for different OCR engines to interpret the configuration files into the
 training or evaluation command for the specified OCR engine. 
 
-It is worth noting that \textit{okralact} has its own component of generating the evaluation report. Different engines provide evaluation report with different level of details. kraken provides very detailed report about the character error rate and the confusion matrix, while  
+% TODO: Last sentence is incomplete
+It is worth noting that \textit{okralact} has its own component for generating the evaluation report. Different engines provide evaluation reports with different levels of detail. kraken provides a very detailed report about the character error rate and the confusion matrix, while  
 % kba: Rui what about evaluation jobs?
 
 
 \section{Conclusion and Future Work}
 
 With the current state of \textit{okralact}, it is possible to describe the
-training process in a standardized way and specify the most important aspects 
+training process in a standardized way and to specify the most important aspects 
 of engine configuration with the common API, the engine-specific features with custom
 parameters. The implementation supports basic training with all four engines
 but does not yet support advanced features like n-fold training or training
 continuation.
+
+% TODO: What are the concrete nexts steps/plans for development of okralact? Can we link to the Sources on GitHub? At least we should say sth about the availability of okralact.
 
 % kba: Rui?
 
@@ -608,13 +602,12 @@ continuation.
 % Expanded Common API by engine developers cooperating
 
 Though we largely succeeded in harmonizing the majority of engine APIs into the
-okralact common API, there still remain many engine-specific parameters. Some
+\textit{okralact} common API, there still remain many engine-specific parameters. Some
 features, like Calamari's n-fold training or tesseract's advanced language
-modelling, are so engine-specific that forcing them into the common API would
-be over-engineering. For those features, users can augment the common API
-with engine-specific parameters, enabling power users to use the full range of
-engine capabilities while requiring next to no knowledge of engine implementation
-by less technically inclined users.
+modelling, are too engine-specific to be encapsulated into the common API. 
+For those features, users can augment the common API with engine-specific parameters, 
+enabling power users to utilize the full range of engine capabilities while requiring 
+next to no knowledge of engine implementation details from less technically inclined users.
 
 However, we hope to encourage engine developers and
 users to discussions about unified terminology, data types and exchange 
