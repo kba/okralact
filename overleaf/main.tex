@@ -325,18 +325,18 @@ activation functions.
 \hline
 Layers                   & Parameters   & OCRopus              & kraken   & Calamari & tesseract \\ \hline
 % CNN Layer& & NA & Yes & Yes & Yes  \\
-\multirow{ 3}{*}{CNN}    & kernel size  & \multirow{3}{*}{NA} & Y        & Y        & Y         \\
-                         & activation   &                      & Y        & N        & Y         \\
-                         & output size  &                      & Y        & Y        & Y         \\ \hline
-\multirow{2}{*}{Pooling} & kernel size  & \multirow{2}{*}{NA}  & Y        & Y        & Y         \\
-                         & stride size  &                      & Y        & N        & Y         \\ \hline
-\multirow{2}{*}{Dropout} & probability  & \multirow{2}{*}{NA}  & Y        & Y        & Y         \\
-                         & dimension    &                      & Y        & N        & Y         \\ \hline
-\multirow{2}{*}{RNN}     & output size  & Y                    & Y        & Y        & Y         \\
-                         & direction    & Y                    & Y        & N        & Y         \\
+\multirow{ 3}{*}{CNN}    & kernel size  & \multirow{3}{*}{NA} & \checkmark        & \checkmark        & \checkmark         \\
+                         & activation   &                      & \checkmark        & -        & \checkmark         \\
+                         & output size  &                      & \checkmark        & \checkmark        & \checkmark         \\ \hline
+\multirow{2}{*}{Pooling} & kernel size  & \multirow{2}{*}{NA}  & \checkmark        & \checkmark        & \checkmark         \\
+                         & stride size  &                      & \checkmark        & -        & \checkmark         \\ \hline
+\multirow{2}{*}{Dropout} & probability  & \multirow{2}{*}{NA}  & \checkmark        & \checkmark        & \checkmark         \\
+                         & dimension    &                      & \checkmark        & -        & \checkmark         \\ \hline
+\multirow{2}{*}{RNN}     & output size  & \checkmark                    & \checkmark        & \checkmark        & \checkmark         \\
+                         & direction    & \checkmark                    & \checkmark        & -        & \checkmark         \\
                          & dynamic cell & lstm                 & lstm/gru & lstm     & lstm/gru  \\
-                         & time axis    & N                    & Y        & N        & Y         \\ \hline
-Output                   & output size  & N                    & Y        & N        & Y         \\
+                         & time axis    & -                    & \checkmark        & -        & \checkmark         \\ \hline
+Output                   & output size  & -                    & \checkmark        & -        & \checkmark         \\
 \end{tabular}
 \caption{Model Design Options for Open Source OCR engines.}
 \label{tab:model_param1}
@@ -363,11 +363,11 @@ getting worse.
 \hline
 Parameters                     &         & OCRopus & kraken & Calamari & tesseract \\ \hline
 % CNN Layer                      &         & NA      & Yes    & Yes      & Yes       \\
-\multirow{2}{*}{Learning Rate} & overall & N       & Y      & Y        & Y         \\
-                               & layer   & N       & N      & N        & Y         \\
+\multirow{2}{*}{Learning Rate} & overall & -       & \checkmark      & \checkmark        & \checkmark         \\
+                               & layer   & -       & -      & -        & \checkmark         \\
 \hline
-Optimizer                      &         & N       & Y      & N        & Y         \\ \hline
-Early Stop                     &         & N       & Y      & Y        & Y         \\
+Optimizer                      &         & -       & \checkmark      & -        & \checkmark         \\ \hline
+Early Stop                     &         & -       & \checkmark      & \checkmark        & \checkmark         \\
 %\hline
 % Maximum &           & lines & epoches                 & iterations               & iterations   \\
 %         & condition &       & performance not         & performance continuously & error rate   \\
