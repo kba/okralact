@@ -257,15 +257,6 @@ additional scripts and automation solutions for training.\cite{springmann2015ocr
 
 % TODO: Mention Ocrocis?
 
-% CN: we should those who already successfully trained and
-% redistributed models for historical documents. I can think of Uwe
-% Springmann, Jesper Zedlitz, ?
-
-% kba: About trained models: Bruce Roberts polytonic greek models
-% come to mind, also https://github.com/tmbdev/ocropy/wiki/Models.
-
-% kba: We should mention the models trained by others like springmann, zedlitz, the standard models shipped with kraken and ocropy, tessdata_best and tessdata_fast.
-
 \subsection{kraken}
 
 kraken \cite{DBLP:journals/corr/RomanovMSK17} started out as a fork of ocropy
@@ -473,24 +464,25 @@ While OCR engines expect GT in the form of line-wise image-text
 tuples and supported file formats, encodings, file structure and
 naming vary from engine to engine. The engines operate on image and
 text data exclusively without the need for layout information.
-Therefore, no engine currently supports any of the common OCR
-file formats (ALTO, hOCR, PAGE-XML) as input. We aim to change this by
-reusing as input format the OCRD-ZIP GT container format developed within
-OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.} \cite{boenig2019datech} This will
-allow users to apply advanced tools for GT creation, such as e.g. 
-PRImA Research Labs' Aletheia \cite{clausner2011aletheia}.
+Therefore, no engine currently supports any of the common OCR file
+formats (ALTO, hOCR, PAGE-XML) as input. We aim to change this by
+reusing as input format the OCRD-ZIP GT container format developed
+within OCR-D.\footnote{\url{https://ocr-d.github.io/ocrd_zip}.}
+\cite{boenig2019datech} This will allow users to apply advanced
+tools for GT creation, such as e.g.  PRImA Research Labs' Aletheia
+\cite{clausner2011aletheia}.
 
 Secondly, we compared the parameterization of the tools and
 identified a set of common parameters that are equivalent across
-engines, yet may differ slightly in their usage or terminology. Beyond
-this common API, there are various configuration options and
+engines, yet may differ slightly in their usage or terminology.
+Beyond this common API, there are various configuration options and
 parameters that are unique per engine. We gathered this information
 in a JSON Schema document that defines the common API and
 engine-specific parameters in a machine-actionable
-form.\footnote{\url{https://ocr-d.github.io/gt-profile.yaml}.} 
-The schema can then be used to validate input configurations to the
-training engine or to generate documentation such as help pages, user
-interface hints and auto-completion.
+form.\footnote{\url{https://ocr-d.github.io/gt-profile.yaml}.} The
+schema can then be used to validate input configurations to the
+training engine or to generate documentation such as help pages,
+user interface hints and auto-completion.
 
 % CN: Here is the first time BagIt gets mentioned we may need a ref
 Lastly, we look at how trained models are distributed and
@@ -524,13 +516,12 @@ As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
 server are implemented using Flask, a lightweight web application framework.
 Users can upload training or evaluation datasets and configuration files
-specifying the OCR engine(s) and parameters to be used. The user
-can also submit a request of training an OCR model with the selected
-dataset and configuration file. After the job is submitted, the
-user can check the job progress. Once the training of a model has
-completed, it can be downloaded. The user can also submit an
-evaluation request with an evaluation dataset and a selected model
-and receive evaluation report.
+specifying the OCR engine(s) and parameters to be used. The user can also
+submit a request of training an OCR model with the selected dataset and
+configuration file. After the job is submitted, the user can check the job
+progress. Once the training of a model has completed, it can be downloaded.
+The user can also submit an evaluation request with an evaluation dataset and
+a selected model and receive evaluation report.
 
 % kba: Rui what does the user receive for the evaluation request?
 % CN: Looks like currently Levenshtein distance is calculated, for
@@ -555,18 +546,18 @@ training command for the specified OCR engine.
 
 \section{Preliminary results}
 
-With the current state of \textit{okralact}, it is possible to describe the training process
-and  configure the most important aspects of engine configuration with the common API, the 
-engine-specific features with custom parameters. The implementation supports basic
-training with all four engines but does not yet support advanced features like
-n-fold training or training continuation.
-
 % CN: Before we conclude, I would expect another section with some
 % minimal evaluation/results discussion, e.g. was it (not?)
 % possible to a) train models for all four engines and b) using the
 % same data according to specs with okralact and c) how do these
 % models compare to ones that are shipped with each engine? 
 
+With the current state of \textit{okralact}, it is possible to describe the
+training process and  configure the most important aspects of engine
+configuration with the common API, the engine-specific features with custom
+parameters. The implementation supports basic training with all four engines
+but does not yet support advanced features like n-fold training or training
+continuation.
 
 % kba: Rui?
 
