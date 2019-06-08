@@ -1,11 +1,16 @@
 % ---------------------------------------------------------------------- %
 % TODO
 %
-% - spelling and capitalization of
-%   - ocropy, OCRopus, OCRopy
-%   - kraken, tesseract
-%   - calamari (OCR)
-%   - common API
+% - [ ] spelling and capitalization of
+%   - [ ] ocropy, OCRopus, <del>OCRopy</del>
+%   - [ ] kraken, tesseract
+%   - [ ] calamari (OCR)
+%   - [ ] common API
+% - [ ] Table 1: Update GitHub Stars, SLOC and date checked
+% - [ ] Add URLs to models
+% - [ ] Add citations to OCR-D MP
+% - [ ] revisit abstract
+% - [ ] Submit :)
 %
 % ----------------------------------------------------------------------
 
@@ -174,11 +179,10 @@ printed historical material.\cite{neudecker2019datech}
 
 The remainder of this paper is divided into four sections. Section
 II provides an overview of the currently most prominent Free
-Software OCR engines and discusses their training features in more
-depth. Section III introduces \textit{okralact} with its
-specification and the prototype implementation. Preliminary
-evaluation results are presented in section IV. We conclude by outlining 
-remaining challenges and future work in section V. 
+Software OCR engines and discusses their training features and models 
+in more depth. Section III introduces \textit{okralact} with its
+specification and the prototype implementation. We conclude by 
+outlining remaining challenges and future work in section IV. 
 
 \section{Open Source OCR}
 
@@ -425,9 +429,6 @@ learned via ``\textit{combine\_lang\_model}'' command. Finally,
 command ``\textit{lstmtraining}'' is used to train an OCR model with
 the traineddata file and the list of lstmf files as input.
 
-% kba this is super-detailed. Maybe hyper-detailed? Can we rephrase that
-% without mentioning all the tools involved?
-
 \subsubsection{Standard models}
 
 A well-engineered OCR engine is only the technical foundation for
@@ -472,15 +473,25 @@ models, mostly targeted towards German in both Antiqua and Fraktur scripts.
 
 % https://github.com/Calamari-OCR/calamari_models
 
+Tesseract is the only project that publishes the GT the standard models are
+trained on. In general, provenance information on GT, model structure and training parameters is missing for the standard models of all engines.
+The kraken models are described by a very basic JSON metadata format but not
+deeply enough to recreate the model. Adapting the specifications outlined
+in section \ref{sec:specs}, e.g. by training with the okralact implementation
+described in \ref{sec:prototype}, full provenance information can be retained,
+making the models more widely usable and sustainable.
+
 
 \section{okralact}
 
 
 % TODO: be more specific
-\textit{Okralact} is both a set of specifications for XXX and a prototype
-implementation of XXX.
+\textit{Okralact} is both a set of specifications and a prototype
+implementation for harmonizing the input data, parameterization and
+provenance tracking of training different OCR engines.
 
 \subsection{Specifications}
+\label{sec:specs}
 
 \textit{Okralact} is an integral part of the OCR-D project that has been
 consolidating specifications and Open Source software around OCR
@@ -556,7 +567,7 @@ submit a request of training an OCR model with the selected dataset and
 configuration file. After the job is submitted, the user can check the job
 progress. Once the training of a model has completed, it can be downloaded.
 The user can also submit an evaluation request with an evaluation dataset and
-a selected model and receive evaluation report.
+a selected model and receive evaluation report for the OCR results. 
 
 % kba: Rui what does the user receive for the evaluation request?
 % CN: Looks like currently Levenshtein distance is calculated, for
@@ -565,7 +576,7 @@ a selected model and receive evaluation report.
 
 % kba: We should briefly explain how we run the evaluation (not rely on the numbers by the engines but regularly recognize with snapshot models, calculate adapted levenshtein for CER, considering WER or BOW WER).
 
-Since training is a long-running process, HTTP communication must be asynchronous,
+Since training and evaluation are both long-running process, HTTP communication must be asynchronous,
 i.e., all the training or evaluation
 jobs submitted to the server are handled in the background by Redis Queue,
 a Python library built on top of Redis that
@@ -573,30 +584,22 @@ executes the work outside an HTTP request-response cycle. It puts job
 requests into the queue of a given worker, which serves in
 first-in-first-out order. When a job gets run, it performs a call to the common
 API for different OCR engines to interpret the configuration files into the
-training command for the specified OCR engine.
+training or evaluation command for the specified OCR engine. 
 
+It is worth noting that \textit{okralact} has its own component of generating the evaluation report. Different engines provide evaluation report with different level of details. kraken provides very detailed report about the character error rate and the confusion matrix, while  
 % kba: Rui what about evaluation jobs?
 
 
-
-\section{Preliminary results}
-
-% CN: Before we conclude, I would expect another section with some
-% minimal evaluation/results discussion, e.g. was it (not?)
-% possible to a) train models for all four engines and b) using the
-% same data according to specs with okralact and c) how do these
-% models compare to ones that are shipped with each engine? 
+\section{Conclusion and Future Work}
 
 With the current state of \textit{okralact}, it is possible to describe the
-training process and  configure the most important aspects of engine
-configuration with the common API, the engine-specific features with custom
+training process in a standardized way and specify the most important aspects 
+of engine configuration with the common API, the engine-specific features with custom
 parameters. The implementation supports basic training with all four engines
 but does not yet support advanced features like n-fold training or training
 continuation.
 
 % kba: Rui?
-
-\section{Challenges and Future Work}
 
 % * [X] Adapt diagram \url{https://docs.google.com/presentation/d/1jyV7pWGkIgtIrc9uJ5jbUwNthOk0JSUgT_tA2QudwkA/edit#slide=id.p}
 % * [X] Describe HTTP API
@@ -604,15 +607,20 @@ continuation.
 
 % Expanded Common API by engine developers cooperating
 
-Though we strived to harmonize the engine APIs into a common API,
-there still remain many engine-specific parameters. Therefore,
-effective use of \textit{okralact} at this stage requires knowledge
-of the individual engine's implementation, making the common API a
-``leaky abstraction''. Yet we hope to encourage engine developers and
-users to discussions about unified
-terminology, data types and exchange formats that can help improve engine
-interoperability and therefore make \textit{okralact} more
-accessible to non-expert users.
+Though we largely succeeded in harmonizing the majority of engine APIs into the
+okralact common API, there still remain many engine-specific parameters. Some
+features, like Calamari's n-fold training or tesseract's advanced language
+modelling, are so engine-specific that forcing them into the common API would
+be over-engineering. For those features, users can augment the common API
+with engine-specific parameters, enabling power users to use the full range of
+engine capabilities while requiring next to no knowledge of engine implementation
+by less technically inclined users.
+
+However, we hope to encourage engine developers and
+users to discussions about unified terminology, data types and exchange 
+formats that can help improve engine interoperability and therefore 
+make \textit{okralact} even more accessible to non-expert users by extending
+the range of the common API still.
 
 % Cleanly defined evaluation measures necessary (no more ISRI or character-counting CER)
 
