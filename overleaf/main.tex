@@ -6,10 +6,11 @@
 %   - [ ] kraken, tesseract
 %   - [ ] calamari (OCR)
 %   - [ ] common API
-% - [ ] Table 1: Update GitHub Stars, SLOC and date checked
+% - [X] Table 1: Update GitHub Stars, SLOC and date checked
 % - [ ] Add URLs to models
 % - [ ] Add citations to OCR-D MP
 % - [ ] revisit abstract
+% - [X] revisit outline (last par in Introduction)
 % - [ ] Submit :)
 %
 % ----------------------------------------------------------------------
@@ -176,7 +177,7 @@ printed historical material.\cite{neudecker2019datech}
 % CN: Outline of the remaining paper - check when final! 
 
 The remainder of this paper is divided into three sections. Section
-II provides an overview of the currently most prominent Free
+II provides an overview of four of the currently most prominent Free
 Software OCR engines and discusses their training features and models 
 in more depth. Section III introduces \textit{okralact} with its
 specification and the prototype implementation. We conclude by 
@@ -204,13 +205,13 @@ for OCR. For the scope of this work, we only consider the four most prominent pr
 \begin{tabular}{lllll}
 \hline
 Engine    & Contributors & First Release & GitHub Stars & SLOC \\ \hline
-OCRopus   & 28           & 2010          & 2557         & 4996 \\
-kraken    & 10           & 2015          & 146          & 4065 \\
-Calamari  & 7            & 2018          & 299          & 6116 \\
-tesseract & 102          & 1985          & 27135        & 143251 \\
+OCRopus   & 28           & 2010          & 2567         & 4996 \\
+kraken    & 10           & 2015          & 149          & 4065 \\
+Calamari  & 7            & 2018          & 315          & 6116 \\
+tesseract & 102          & 1985          & 27500        & 143251 \\
 
 \end{tabular}
-\caption{Software metrics of selected Open Source OCR engines as of 2019-05-22}
+\caption{Software metrics of selected Open Source OCR engines as of 2019-06-09}
 \label{tab:stats}
 \end{table}
 
@@ -349,7 +350,7 @@ The four OCR engines provide different levels of flexibility to fine-tune traini
 parameters such as the learning rate, which optimizer to use or whether to stop early,
 as summarized in Table~\ref{tab:training_options}. For different
 optimizers, different OCR engines also provide different ways to adjust
-optimizer parameters. All four engines allow the user to specify how long the
+optimizer parameters. The learning rate of OCRopus and kraken can be specified by the user, while calamari and tesseract only support default learning rate. Tesseract is the only engine allows different layers to have different learning rate. All four engines allow the user to specify how long the
 model should be trained in terms of maximum number of training samples, epochs
 or iterations. Kraken, calamari and tesseract also support early stopping,
 i.e., stopping training earlier than the specified ending point, when the model
@@ -364,7 +365,7 @@ getting worse.
 \hline
 Parameters                     &         & OCRopus & kraken & calamari & tesseract \\ \hline
 % CNN Layer                      &         & NA      & Yes    & Yes      & Yes       \\
-\multirow{2}{*}{Learning Rate} & overall & -       & \checkmark      & \checkmark        & \checkmark         \\
+\multirow{2}{*}{Learning Rate} & overall & \checkmark       & \checkmark      & -        &  -         \\
                                & layer   & -       & -      & -        & \checkmark         \\
 \hline
 Optimizer                      &         & -       & \checkmark      & -        & \checkmark         \\ \hline
@@ -423,6 +424,7 @@ command ``\textit{lstmtraining}'' is used to train an OCR model with
 the traineddata file and the list of lstmf files as input.
 
 \subsubsection{Standard models}
+\label{sec:models}
 
 A well-engineered OCR engine is only the technical foundation for
 good recognition results. How accurately a particular model recognizes text
@@ -577,27 +579,15 @@ first-in-first-out order. When a job gets run, it performs a call to the common
 API for different OCR engines to interpret the configuration files into the
 training or evaluation command for the specified OCR engine. 
 
-% TODO: Last sentence is incomplete
-It is worth noting that \textit{okralact} has its own component for generating the evaluation report. Different engines provide evaluation reports with different levels of detail. kraken provides a very detailed report about the character error rate and the confusion matrix, while  
-% kba: Rui what about evaluation jobs?
+It is worth noting that \textit{okralact} has its own component for generating an evaluation report. Different engines provide evaluation reports with different levels of detail. kraken provides a very detailed report about the character error rate and the confusion matrix, while ocropy has a command to compute confusion matrices. All engines produce variations of character error rate (CER) in the log output. To provide a unified version of the evaluation report for each engine, \textit{okralact} first generates an OCR result for each image and then evaluates the results in terms of CER by computing Levenshtein distance between the OCR result and the ground truth. We will add other evaluation metrics such as word error rate (WER) and confusion matrix later. WER can provide a rough estimation for the performance of downstream tasks such as information retrieval (IR) or named entity recognition (NER). A confusion matrix can provide better understanding of OCR errors, i.e., the frequency at which the engines make particular errors.
 
 
 \section{Conclusion and Future Work}
 
 With the current state of \textit{okralact}, it is possible to describe the
-training process in a standardized way and to specify the most important aspects 
-of engine configuration with the common API, the engine-specific features with custom
-parameters. The implementation supports basic training with all four engines
-but does not yet support advanced features like n-fold training or training
-continuation.
-
-% TODO: What are the concrete nexts steps/plans for development of okralact? Can we link to the Sources on GitHub? At least we should say sth about the availability of okralact.
-
-% kba: Rui?
-
-% * [X] Adapt diagram \url{https://docs.google.com/presentation/d/1jyV7pWGkIgtIrc9uJ5jbUwNthOk0JSUgT_tA2QudwkA/edit#slide=id.p}
-% * [X] Describe HTTP API
-%   * [X] Draft a `/evaluation` endpoint taking evaluation config, model, groundTruth and %returning measures like CER, WER ...
+training process in a standardized way and to specify the most important
+aspects  of engine configuration with the common API, the engine-specific
+features with custom parameters.
 
 % Expanded Common API by engine developers cooperating
 
@@ -611,9 +601,19 @@ next to no knowledge of engine implementation details from less technically incl
 
 However, we hope to encourage engine developers and
 users to discussions about unified terminology, data types and exchange 
-formats that can help improve engine interoperability and therefore 
-make \textit{okralact} even more accessible to non-expert users by extending
-the range of the common API still.
+formats that can help improve engine interoperability and 
+make \textit{okralact} and therefore the engines that it supports even more
+accessible to non-expert users by extending the range of the common API still.
+
+The next steps in development will include extending, documenting and standardizing
+the evaluation of models, better support for continued training and fully fleshing
+out the provenance-tracking exchange format for trained models with a focus on
+how it can help describing not only the models produced by \textit{okralact} but
+also existing models produced by the community such as those mentioned in
+section~\ref{sec:models}. The \textit{okralact} prototype is Free Software, the
+specifications are in the public domain, development will continue openly on
+GitHub and is open to outside collaborators.\footnote{\url{https://github.com/OCR-D/okralact}.}
+
 
 % Cleanly defined evaluation measures necessary (no more ISRI or character-counting CER)
 
@@ -645,7 +645,7 @@ recognition workflows. As \textit{okralact} is part of the OCR-D
 ecosphere, which has been developing components of a full-stack
 OCR workflow, including image preprocessing, layout detection, font
 detection, layout classification, recognition and language-model
-post-processing, we intend to integrate \textit{okralact} into the
+post-processing\cite{englmaier2019datech}, we intend to integrate \textit{okralact} into the
 OCR-D specification and reference implementation. This will enable
 users to pick and choose the best Free Software implementations for
 the hole gamut of text recognition needs.
