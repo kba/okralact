@@ -8,14 +8,15 @@
 %   - [ ] common API
 % - [X] Table 1: Update GitHub Stars, SLOC and date checked
 % - [ ] Add URLs to models
-% - [ ] Add citations to OCR-D MP
-% - [ ] Plug ocropus/calamari comparison in calamari section
+% - [X] Add citations to OCR-D MP
+% - [X] Plug ocropus/calamari comparison in calamari section
 % - [ ] revisit abstract
 % - [X] revisit outline (last par in Introduction)
 % - [ ] check the final numbering/referencing within sections
 % - [X] fill in the ACM conf info
-% - [ ] fix over-wide tables
+% - [X] fix over-wide tables
 % - [X] fix bibtex warnings/errors
+% - [ ] Funding info
 % - [ ] Submit :)
 %
 % ----------------------------------------------------------------------
@@ -33,7 +34,7 @@
 
 % https://tex.stackexchange.com/questions/346292/how-to-remove-conference-information-from-the-acm-2017-sigconf-template
 \settopmatter{printacmref=false} % Removes citation information below abstract
-%\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
 
 \acmConference[HIP '19]{The 5th International Workshop on Historical Document Imaging and Processing}{September 20--21, 2019}{Sydney, Australia}
 
@@ -129,7 +130,7 @@ wider OCR ecosystem.
 
 Advances in deep learning have been a game-changer for image
 processing, document layout analysis and text recognition, key components of optical
-character recognition (OCR). Text recognition technology in
+character recognition (OCR) technology. Text recognition in
 particular has seen a paradigm-shift, away from a combination of character
 segmentation and pattern-based detection, towards
 segmentation-free recognition based on deep neural networks (NN).
@@ -158,10 +159,10 @@ aligning between them. It both saves the efforts of segmenting the images into
 characters and avoids the possible errors introduced in this process.
 
 In the particular context of historical documents and Fraktur fonts, e.g.
-\cite{breuel2013high} have applied RNN with LSTM for OCR and obtained 
+\cite{breuel2013high} have applied RNN with Long Short-Term Memory (LSTM) for OCR and obtained 
 competitive accuracy when compared to ABBYY FineReader, tesseract or OCRopus. 
 An additional benefit that comes with the application of LSTM is that there is
-no more the need for a specific language model or dictionary, both of which are 
+no more need for a specific language model or dictionary, both of which are 
 typically sparse for historical language, without trading off recognition accuracy \cite{ul2013can}.
 
 %Any NN-based approach involves two steps: Training a model based on manually
@@ -189,17 +190,14 @@ provenance tracking of training different OCR engines.
 OCR-D\footnote{http://ocr-d.de/}, a composition of a
 coordination and several module projects established with support
 from Deutsche Forschungsgemeinschaft (German Research Foundation,
-DFG). OCR-D has the aim to examine available technologies for OCR and via the 
+DFG). OCR-D has the mission to examine available technologies for OCR and via the 
 definition of standards and best-practices in combination with the adaptation and development of state-of-the-art NN-based methods contribute to improving the OCR process for mass-digitization of 
 printed historical material \cite{neudecker2019datech}.  
 
-% TODO
-% CN: Outline of the remaining paper - check when final! 
-
 The remainder of this paper is divided into three sections. Section
-II provides an overview of four of the currently most prominent Free
+II provides an overview of the currently most prominent Free
 Software OCR engines and discusses their training features and models 
-in more depth. Section III introduces \textit{okralact} with its
+in depth. Section III introduces \textit{okralact} with its
 specification and the prototype implementation. We conclude by 
 outlining remaining challenges and future work in section IV. 
 
@@ -227,8 +225,8 @@ for OCR. For the scope of this work, we only consider the four most prominent pr
 Engine    & Contributors & First Release & GitHub Stars & SLOC \\ \hline
 OCRopus   & 28           & 2010          & 2567         & 4996 \\
 kraken    & 10           & 2015          & 149          & 4065 \\
-Calamari  & 7            & 2018          & 315          & 6116 \\
-tesseract & 102          & 1985          & 27500        & 143251 \\
+Calamari  & 8            & 2018          & 315          & 6116 \\
+tesseract & 104          & 1985          & 27500        & 143251 \\
 
 \end{tabular}
 \caption{Software metrics of selected Open Source OCR engines as of 2019-06-09}
@@ -253,7 +251,7 @@ the desired improvements in OCR accuracy.
 
 With the first alpha of version 4.0.0 released in 2016, tesseract introduced a trainable
 engine based on LSTM NN \cite{smith2016tesseract}. While still a very involved, multi-step process, the
-improved accuracy and fine-tuning to specific corpora outweighs the effort.
+improved accuracy and fine-tuning to specific corpora outweigh the effort.
 There have been activities to streamline the training process, e.g.
 ocrd-train\footnote{\url{https://github.com/OCR-D/ocrd-train}.} implements a training workflow for
 tesseract 4 as a Makefile.
@@ -263,11 +261,10 @@ tesseract 4 as a Makefile.
 The brainchild of Thomas Breuel and first released in 2007, OCRopus
 \cite{breuel} was initially a set of tools around OCR based on
 tesseract. With the release of the Python implementation ocropy in
-2010, OCRopus revolutionized OCR by adopting
-Long-Short-Term-Memory (LSTM). OCRopus bundled a set of rudimentary but
-usable command line tools not only to train and apply models but
+2010, OCRopus revolutionized OCR by adopting LSTM. OCRopus bundled a set of rudimentary but
+usable command line tools not only to train and apply models, but
 also to preprocess images (binarization, deskewing, layout analysis),
-evaluate recognition results and a basic user interface to produce
+evaluate recognition results and offered a basic user interface to produce
 GT data. Ocrocis is a noteable augmentation of OCRopus, providing best practices and
 additional scripts and automation solutions for training \cite{springmann2015ocrocis}.
 
@@ -297,7 +294,7 @@ Christoph Wick has been developing the Calamari
 \cite{DBLP:journals/corr/abs-1807-02004} OCR engine since 2018, based on the
 codebases of ocropy and kraken but backed by the TensorFlow machine learning
 framework. Calamari also added advanced features such as n-fold training and
-voting algorithms and is used as the main component of the OCR4all
+voting algorithms \cite{wickcomparison} and is used as the main component of the OCR4all
 framework.\footnote{\url{https://github.com/OCR4all}.}
 
 \subsection{Feature comparison}
@@ -313,7 +310,7 @@ Tesseract is implemented in C++ while the
 other three engines are all written in Python. Tesseract and ocropy
 implement the neural networks as well as the inference from scratch without
 utilizing any existing deep learning libraries. Kraken uses PyTorch as the
-deep learning backend. Calamari allows using different deep learning backends,
+deep learning backend. Calamari is targeted at using different deep learning backends,
 though currently only the TensorFlow backend is implemented.
 
 %\subsubsection*{Library Dependencies}
@@ -336,11 +333,8 @@ Tesseract, kraken and Calamari provide more modeling options to the user. They
 allow users to add arbitrary numbers of CNN, max pooling \cite{boureau2010theoretical}, dropout \cite{srivastava2014dropout} and RNN
 layers. All three engines support user specified kernel size and output size in
 CNN layer, but tesseract and kraken also provide additional options for
-activation functions. The max pooling layer is used to downsample the image features and keep the sharpest ones. All three engines allow the users to modify the kernel size and the stride size for pooling layer. Dropout layers is used to prevent overfitting on training data. kraken and tesseract allow user specific dropout dimension, i.e., whether to apply dropout on 1 dimension or 2 dimension. Calamari only supports bidirectional LSTM for RNN layer, while tesseract and kraken allows user to define forward/backward/bidirectional RNN layer with LSTM or GRU cells.
+activation functions. The max pooling layer is used to downsample the image features and keep the sharpest ones. All three engines allow the users to modify the kernel size and the stride size for pooling layer. Dropout layers is used to prevent overfitting on training data. Kraken and tesseract allow user specific dropout dimension, i.e., whether to apply dropout on 1 dimension or 2 dimensions. Calamari only supports bidirectional LSTM for RNN layer, while tesseract and kraken allow the user to define forward, backward and bidirectional RNN layer with LSTM or GRU cells. Furthermore, kraken and tesseract support user specific time axis, i.e., which dimension is the temporal dimension. Users can also specify the number of output classes in the output layer with kraken and tesseract. 
 %The kernel size is the size of the sub-region for pooling and the stride size is the number of pixels to move the filter across the image in vertical and horizontal directions.  
-
-% kba: Rui can we substantiate these features with citations? "Pooling" can mean
-% a lot of things in different contexts, e.g.
 
 \begin{table}[bt]
 \begin{tabular}{llp{1cm}lp{1cm}l}
@@ -417,7 +411,7 @@ All examined OCR engines provide basic user interfaces to
 train OCR models, although they vary in the set of adjustable
 parameters and ease of use. Calamari and kraken, due to their lineage,
 provide some tools similar to ocropy or advise to use ocropy's tools
-directly. The ocropy codebase is not developed further hence the interfaces
+directly. The ocropy codebase is not in active development hence the interfaces
 are frozen in the state of ca. 2015, also to avoid breaking legacy OCR
 workflows. Both kraken and calamari significantly improve the command
 line interfaces. While kraken allows for elegant and terse calls by
@@ -573,14 +567,14 @@ log files.
 
 As shown in Figure \ref{fig:framework}, \textit{okralact} is a client/server
 architecture application. The interactions between the client nodes and the
-server are implemented using Flask, a lightweight web application framework for Python.
+server are implemented using Flask \footnote{\url{http://flask.pocoo.org/}}, a lightweight web application framework for Python.
 Users can upload training or evaluation datasets and configuration files
 specifying the OCR engine(s) with the corresponding parameters to be used. 
 The user can also submit a request of training an OCR model with the selected 
 dataset and configuration file. After the job is submitted, the user can check the job
-progress. Once the training of a model has completed, it can be downloaded.
+progress, i.e., waiting, running, finished or failed. Once the training of a model has completed, it can be downloaded.
 The user can also submit an evaluation request with an evaluation dataset and
-a selected model and receive an evaluation report for the OCR results. 
+a selected model and receive an evaluation report for the OCR results. All these communication between server and client nodes are through HTTP methods responding by Flask route.  
 
 % kba: Rui what does the user receive for the evaluation request?
 % CN: Looks like currently Levenshtein distance is calculated, for
@@ -591,13 +585,13 @@ a selected model and receive an evaluation report for the OCR results.
 
 Since training and evaluation are both long-running process, HTTP communication must be asynchronous,
 i.e., all the training or evaluation
-jobs submitted to the server are handled in the background by Redis Queue,
-a Python library built on top of Redis that
-executes the work outside an HTTP request-response cycle. It puts job
-requests into the queue of a given worker, which serves in
+jobs submitted to the server are handled in the background by task queues. \textit{okralact} uses the popular task queue, Redis Queue \footnote{\url{https://python-rq.org/}} (RQ),
+a Python library backed by Redis that
+executes the work outside an HTTP request-response cycle. The application puts job
+requests into the queue of a given worker process, which serves in
 first-in-first-out order. When a job gets run, it performs a call to the common
 API for different OCR engines to interpret the configuration files into the
-training or evaluation command for the specified OCR engine. 
+training or evaluation command for the specified OCR engine, and then executes the training command. The application on the server communicates with the RQ workers via Redis message queue. After submitting the job, the application can monitor the job progress by interacting with the message queues. \textit{okralact} has two worker processes in the background, one for training jobs and one for evaluation jobs, so that training and evaluation jobs could run simultaneously and independently on the server.
 
 It is worth noting that \textit{okralact} has its own component for generating an evaluation report. Different engines provide evaluation reports with different levels of detail. kraken provides a very detailed report about the character error rate and the confusion matrix, while ocropy has a command to compute confusion matrices. All engines produce variations of character error rate (CER) in the log output. To provide a unified version of the evaluation report for each engine, \textit{okralact} first generates an OCR result for each image and then evaluates the results in terms of CER by computing Levenshtein distance between the OCR result and the ground truth. We will add other evaluation metrics such as word error rate (WER) and confusion matrix later. WER can provide a rough estimation for the performance of downstream tasks such as information retrieval (IR) or named entity recognition (NER). A confusion matrix can provide better understanding of OCR errors, i.e., the frequency at which the engines make particular errors.
 
@@ -621,11 +615,11 @@ next to no knowledge of engine implementation details from less technically incl
 However, we hope to encourage engine developers and
 users to discussions about unified terminology, data types and exchange 
 formats that can help improve engine interoperability and 
-make \textit{okralact} and therefore the engines that it supports even more
-accessible to non-expert users by extending the range of the common API still.
+make \textit{okralact} and therefore the engines it supports even more
+accessible to non-expert users by extending the range of the common API.
 
 The next steps in development will include extending, documenting and standardizing
-the evaluation of models, better support for continued training and fully fleshing
+the evaluation of models, better support for transfer learning \cite{027.7169} and fully fleshing
 out the provenance-tracking exchange format for trained models with a focus on
 how it can help describing not only the models produced by \textit{okralact} but
 also existing models produced by the community such as those mentioned in
@@ -662,36 +656,12 @@ GitHub and is open to outside collaborators.\footnote{\url{https://github.com/OC
 Lastly, we aim for a better integration of training and
 recognition workflows. As \textit{okralact} is part of the OCR-D
 ecosphere, which has been developing components of a full-stack
-OCR workflow, including image preprocessing, layout detection, font
-detection, layout classification, recognition and language-model
-post-processing \cite{englmaier2019datech}, we intend to integrate \textit{okralact} into the
+OCR workflow,\footnote{Visit \url{https://ocr-d.github.io/projects} for a list of partner projects of OCR-D and the workflow components they are developing.} 
+%including image preprocessing,\footnote{\url{https://github.com/syedsaqibbukhari/docanalysis}.}, layout detection,\footnote{\url{https://github.com/ocr-d-modul-2-segmentierung}.}\footnote{\url{https://github.com/mjenckel/LAYoutERkennung}.} \cite{Reul:2017:LSO:3078081.3078097}, font detection,\footnote{\url{https://github.com/seuretm/ocrd_typegroups_classifier}.} layout classification, recognition and language-model post-processing \cite{englmaier2019datech}, 
+we intend to integrate \textit{okralact} into the
 OCR-D specification and reference implementation. This will enable
 users to pick and choose the best Free Software implementations for
 the hole gamut of text recognition needs.
-
-% kba: Plug our module projects by citing papers here.
-
-
-%\section*{References}
-
-% Please number citations consecutively within brackets \cite{b1}. The
-% sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference
-% number, as in \cite{IEEEexample:bluebookbook} ---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at
-% the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
-%
-% Number footnotes separately in superscripts. Place the actual footnote at
-% the bottom of the column in which it was cited. Do not put footnotes in the
-% abstract or reference list. Use letters for table footnotes.
-%
-% Unless there are six authors or more give all authors' names; do not use
-% ``et al.''. Papers that have not been published, even if they have been
-% submitted for publication, should be cited as ``unpublished'' \cite{b4}. Papers
-% that have been accepted for publication should be cited as ``in press'' \cite{b5}.
-% Capitalize only the first word in a paper title, except for proper nouns and
-% element symbols.
-%
-% For papers published in translation journals, please give the English
-% citation first, followed by the original foreign-language citation \cite{b6}.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{bibliography}
