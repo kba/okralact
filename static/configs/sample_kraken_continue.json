@@ -5,6 +5,9 @@
             {"rnn": {"direction": "forward", "output": 10}}
             ],
   "engine":  "kraken",
-  "early_stop": {"nbest": 1,"min_improve": 0.01},
-  "nepoch": 10
+  "nepoch": 10,
+  "continue_from": {"trainset":  "data_kraken.tar.gz",
+                    "config":"sample_kraken.json",
+                    "model": "best.mlmodel"},
+  "append": 2
 }

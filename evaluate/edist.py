@@ -5,14 +5,12 @@ from scipy.ndimage import filters
 import unicodedata
 
 
-def levenshtein(a, b):
+def levenshtein_word(a, b):
     """Calculates the Levenshtein distance between a and b.
     (Clever compact Pythonic implementation from hetland.org)"""
-    a = unicodedata.normalize('NFC', a)
-    b = unicodedata.normalize('NFC', b)
     n, m = len(a), len(b)
     if n > m:
-        a, b = b, a;
+        a, b = b, a
         n, m = m, n
     current = range(n+1)
     for i in range(1, m+1):
@@ -29,8 +27,6 @@ def levenshtein(a, b):
 def xlevenshtein(a, b, context=1):
     """Calculates the Levensthein distance between a and b
     and generates a list of differences by context."""
-    a = unicodedata.normalize('NFC', a)
-    b = unicodedata.normalize('NFC', b)
     n, m = len(a), len(b)
     assert m > 0    # xlevenshtein should only be called with non-empty b string (ground truth)
     if a == b:

@@ -10,20 +10,6 @@ from engines.process_tesseract import convert_image, get_all_files
 from lib.file_operation import get_model_dir
 
 
-def creat_valid():
-    clear_data(valid_folder)
-    file_valid = pjoin('engines', 'tmp', 'list.eval')
-    with open(file_valid) as f_:
-        for line in f_:
-            file_folder, file_name = line.strip().rsplit('/', 1)
-            file_name = file_name.split('.')[0] + '.png'
-            src_file = pjoin(data_folder,  file_name)
-            dst_file = pjoin(valid_folder, file_name)
-            copyfile(src_file, dst_file)
-            copyfile(src_file.rsplit('.', 1)[0] + '.gt.txt',
-                     dst_file.rsplit('.', 1)[0] + '.gt.txt')
-
-
 def read_report(model_dir):
     dict_res = OrderedDict()
     best_model = -1
@@ -59,7 +45,7 @@ def get_model_postfixes(engine, model_dir, model_prefix):
     if engine == 'kraken':
         return sorted([ele.split('_')[1] for ele in models])
     elif engine == 'calamari':
-        return sorted([ele[len(model_prefix):] for ele in models])
+        return sorted([ele.split('_')[1] for ele in models])
     elif engine == 'ocropus':
         return sorted([ele.split('-')[1] for ele in models])
     else:
@@ -70,7 +56,7 @@ def get_model_path(engine, model_prefix, index):
     if engine == 'kraken':
         model_str = '%s_%s.mlmodel'
     elif engine == 'calamari':
-        model_str = '%s%s.ckpt'
+        model_str = '%s_%s.ckpt'
     elif engine == 'ocropus':
         model_str = '%s-%s.pyrnn.gz'
     else:
@@ -101,12 +87,12 @@ def copy_best_model(engine, model_dir, model_prefix, best_model_index):
     abs_model_dir = pjoin(model_root, model_dir)
     if engine == 'kraken':
         best_model_file = '%s_%s.mlmodel' % (model_prefix, best_model_index)
-        dest_model_file = 'best.mlmodel'
+        dest_model_file = 'valid_best.mlmodel'
         copyfile(pjoin(abs_model_dir, best_model_file),
                  pjoin(abs_model_dir, dest_model_file))
     elif engine == 'calamari':
-        best_model_file ='%s%s.ckpt' % (model_prefix, best_model_index)
-        dest_model_file = pjoin(model_root, model_dir, 'best.ckpt')
+        best_model_file ='%s_%s.ckpt' % (model_prefix, best_model_index)
+        dest_model_file = 'valid_best.ckpt'
         for ele in os.listdir(abs_model_dir):
             if ele.startswith(best_model_file):
                 postfix = '.' + ele.rsplit('.', 1)[1]
@@ -114,12 +100,12 @@ def copy_best_model(engine, model_dir, model_prefix, best_model_index):
                          pjoin(abs_model_dir, dest_model_file + postfix))
     elif engine == 'ocropus':
         best_model_file = '%s-%s.pyrnn.gz' % (model_prefix, best_model_index)
-        dest_model_file = 'best.pyrnn.gz'
+        dest_model_file = 'valid_best.pyrnn.gz'
         copyfile(pjoin(abs_model_dir, best_model_file),
                  pjoin(abs_model_dir, dest_model_file))
     else:
         best_model_file = '%s_%s.checkpoint' % (model_prefix, best_model_index)
-        dest_model_file = 'best.checkpoint'
+        dest_model_file = 'valid_best.checkpoint'
         copyfile(pjoin(abs_model_dir, 'checkpoint', best_model_file), pjoin(abs_model_dir, 'checkpoint', dest_model_file))
 
 
@@ -131,7 +117,6 @@ def valid_from_file(file_train, file_config):
     common_schema = read_json("engines/schemas/common.schema")
     model_prefix = configs["model_prefix"] if "model_prefix" in configs \
         else common_schema["definitions"]["model_prefix"]["default"]
-    creat_valid()
     # noinspection PyInterpreter
     dict_res, best_perform, best_model = read_report(model_dir)
     # write the evaluation report
@@ -145,7 +130,7 @@ def valid_from_file(file_train, file_config):
             model_path = pjoin(model_root, model_dir, model_file)
             if engine == 'tesseract':
                 cmd_list = ['export TESSDATA_PREFIX=%s' % pjoin(os.getcwd(), model_root, model_dir),
-                            'lstmtraining --stop_training --continue_from %s --traineddata %s --model_output %s' %
+                            '/Users/doreen/Documents/Experiment/Package/tesseract/src/training/lstmtraining --stop_training --continue_from %s --traineddata %s --model_output %s' %
                             (model_path,
                              pjoin(model_root, model_dir, model_prefix, '%s.traineddata' % model_prefix),
                              pjoin(model_root, model_dir, model_prefix + '.traineddata'))]
@@ -174,5 +159,5 @@ def valid_from_file(file_train, file_config):
             f_out.write('Iteration: %s, %s\n' % (res_str[1], res_str[0]))
     copy_best_model(engine, model_dir, model_prefix, best_model)
 
-
+valid_from_file('data_kraken.tar.gz', 'sample_calamari.json')
 # eval_from_file(model_dir='tess_new', engine='tesseract', model_prefix='tess')

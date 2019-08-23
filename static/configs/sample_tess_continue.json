@@ -6,4 +6,9 @@
             ],
   "engine":  "tesseract",
   "batch_size":  10,
-  "model_prefix": "tess"}
+  "model_prefix": "tess",
+  "continue_from": {"trainset":  "data_kraken.tar.gz",
+                    "config":"sample_tess.json",
+                    "model": "valid_best.checkpoint"},
+  "append": 2
+}

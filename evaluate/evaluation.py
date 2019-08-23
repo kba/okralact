@@ -52,6 +52,8 @@ def process1(fname):
         txt = ""
     # Also the ground truth cannot be empty, it is possible that
     # after filtering (args.kind) the gt string is empty.
+    txt = unicodedata.normalize('NFC', txt)
+    gt = unicodedata.normalize('NFC', gt)
     if len(gt) == 0:
         err = len(txt)
         if len(txt) > 0:
@@ -66,14 +68,40 @@ def process1(fname):
     return fname, err, len(gt), missing, counts
 
 
+def process2(fname):
+    global kind, extension, allconf
+    gt = project_text(read_text(fname), kind=kind)
+    ftxt = allsplitext(fname)[0] + extension
+    missing = 0
+    if os.path.exists(ftxt):
+        txt = project_text(read_text(ftxt), kind=kind)
+    else:
+        missing = len(gt)
+        txt = ""
+
+    txt = unicodedata.normalize('NFC', txt).split(' ')
+    gt = unicodedata.normalize('NFC', gt).split(' ')
+    # Also the ground truth cannot be empty, it is possible that
+    # after filtering (args.kind) the gt string is empty.
+    if len(gt) == 0:
+        err = len(txt)
+    else:
+        err = edist.levenshtein_word(txt, gt)
+    return fname, err, len(gt), missing
+
+
 def evaluate(files):
     args = Args()
     args.files = files
     outputs = []
+    outputs_wer = []
     if args.parallel < 2:
+        initializer(args)
         for e in args.files:
             result = process1(e)
             outputs.append(result)
+            result_wer = process2(e)
+            outputs_wer.append(result_wer)
     else:
         try:
             pool = multiprocessing.Pool(args.parallel, initializer=initializer(args))
@@ -83,7 +111,17 @@ def evaluate(files):
             pool.close()
             pool.join()
             del pool
+        try:
+            pool1 = multiprocessing.Pool(args.parallel, initializer=initializer(args))
+            for e in pool1.imap_unordered(process2, args.files, 10):
+                outputs_wer.append(e)
+        finally:
+            pool1.close()
+            pool1.join()
+            del pool1
     outputs = sorted(list(outputs))
+    outputs_wer = sorted(list(outputs_wer))
+
     perfile = None
     if args.perfile is not None:
         perfile = codecs.open(args.perfile, "w", "utf-8")
@@ -104,6 +142,13 @@ def evaluate(files):
         if allconf is not None:
             for (a, b), v in c.most_common(1000):
                 allconf.write("%s\t%s\t%s\n" % (a, b, fname))
+    errs_w = 0
+    total_w = 0
+    missing_w = 0
+    for fname, e, t, m in outputs_wer:
+        errs_w += e
+        total_w += t
+        missing_w += m
 
     if perfile is not None:
         perfile.close()
@@ -111,18 +156,20 @@ def evaluate(files):
         allconf.close()
 
     res = {}
-    res['errors'] = errs
-    res['missing'] = missing
-    res['total'] = total
-
+    res['errors'] = int(errs)
+    res['missing'] = int(missing)
+    res['total'] = int(total)
+    res['errors_word'] = int(errs)
+    res['missing_word'] = int(missing)
+    res['total_word'] = int(total)
     if total > 0:
         res['char_error_rate'] = "%.3f " % (errs * 1.0 / total)
         res['errnomiss'] = "%8.3f " % ((errs-missing) * 100.0 / total)
-    if args.confusion > 0:
-        res['confusion'] = []
-        for (a, b), v in counts.most_common(args.confusion):
-            print("%d\t%s\t%s" % (v, a, b))
-            res['confusion'].append((v, a, b))
+        res['word_error_rate'] = "%.3f " % (errs_w * 1.0 / total_w)
+    # if args.confusion > 0:
+    #     res['confusion'] = []
+    #     for (a, b), v in counts.most_common(args.confusion):
+    #         print("%d\t%s\t%s" % (v, a, b))
+    #         res['confusion'].append((v, a, b))
     print(res)
     return res
-

@@ -1,61 +1,42 @@
-from engines.train import clear_data
 from engines.validate_parameters import read_json
 import subprocess
 from os.path import join as pjoin
 import os
+import uuid
+import json
 from lib.file_operation import get_model_dir
-from evaluate.levenshtein import align
 from engines.common import clear_data, extract_file
+from lib.file_operation import read_list, write_list
 from engines.process_tesseract import convert_image, get_all_files
 from evaluate.evaluation import evaluate
-from engines import eval_folder, model_root, data_root, config_root, act_environ, deact_environ
+from engines import eval_folder, model_root, data_root, config_root, eval_root, act_environ, deact_environ
 
 
-def evl_pair():
-    gt_files = [ele for ele in os.listdir(eval_folder) if ele.endswith('gt.txt')]
-    pred_files = [ele.strip('.gt.txt') + '.txt' for ele in gt_files]
-    gt_lines = []
-    for fn in gt_files:
-        with open('%s/%s' % (eval_folder, fn)) as f_:
-            line = f_.readlines()[0].strip()
-            gt_lines.append(line)
-    pred_lines = []
-    for fn in pred_files:
-        if not os.path.exists(pjoin(eval_folder, fn)):
-            pred_lines.append('')
-            print('not exist:', fn)
-            continue
-        with open('%s/%s' % (eval_folder, fn)) as f_:
-            lines = f_.readlines()
-            if len(lines) > 0:
-                line = lines[0].strip()
-            else:
-                print('empty: ', fn)
-                line = ''
-            pred_lines.append(line)
-    print(gt_lines[0:10],  pred_lines[0:10])
-    sum_dis = 0
-    sum_len = 0
-    for pdl, gtl in zip(pred_lines, gt_lines):
-        sum_dis += align(pdl, gtl)
-        sum_len += len(gtl)
-    print(sum_len)
-    print(sum_dis)
-    return sum_dis * 1. / sum_len
+def add_eval_report(file_test, file_train, file_config, file_model):
+    eval_file = pjoin(eval_root, 'eval_list')
+    dict_eval = read_list(eval_file)
+    key = (file_test, file_train, file_config, file_model)
+    uni_model_dir = uuid.uuid4().hex
+    if key in dict_eval:
+        old_eval_file = dict_eval[key]
+        os.remove(pjoin(eval_root, old_eval_file))
+    dict_eval[key] = uni_model_dir
+    write_list(eval_file, dict_eval)
+    return dict_eval[key]
 
 
 def get_best_model_path(engine, model_dir):
     if engine == 'kraken':
-        return pjoin(model_root, model_dir, 'best.mlmodel')
+        return pjoin(model_root, model_dir, 'valid_best.mlmodel')
     elif engine == 'calamari':
-        return pjoin(model_root, model_dir, 'best.ckpt')
+        return pjoin(model_root, model_dir, 'valid_best.ckpt')
     elif engine == 'ocropus':
-        return pjoin(model_root, model_dir, 'best.pyrnn.gz')
+        return pjoin(model_root, model_dir, 'valid_best.pyrnn.gz')
     else:
-        return pjoin(model_root, model_dir, 'checkpoint', 'best.checkpoint')
+        return pjoin(model_root, model_dir, 'checkpoint', 'valid_best.checkpoint')
 
 
-def eval_from_file(file_test, file_train, file_config):
+def eval_from_file(file_test, file_train, file_config,  model_file):
     clear_data(eval_folder)
     extract_file(pjoin(data_root, file_test), eval_folder)
     configs = read_json(pjoin(config_root, file_config))
@@ -65,7 +46,7 @@ def eval_from_file(file_test, file_train, file_config):
     model_prefix = configs["model_prefix"] if "model_prefix" in configs \
         else common_schema["definitions"]["model_prefix"]["default"]
     cmd_list = [act_environ(engine)] if engine != 'tesseract' else []
-    best_model = get_best_model_path(engine, model_dir)
+    best_model = pjoin(model_root, model_dir, model_file)
     if engine == 'kraken':
         cmd_list.append('kraken -I \'%s/*.png\' -o .txt ocr -m %s -s'
                         % (eval_folder,  best_model))
@@ -76,7 +57,7 @@ def eval_from_file(file_test, file_train, file_config):
         cmd_list.append('ocropus-rpred -m %s \'%s/*.png\'' % (best_model, eval_folder))
     elif engine == 'tesseract':
         cmd_list.append('export TESSDATA_PREFIX=%s' % pjoin(model_root, model_dir))
-        cmd_list.append('lstmtraining --stop_training --continue_from %s --traineddata %s --model_output %s' %
+        cmd_list.append('/Users/doreen/Documents/Experiment/Package/tesseract/src/training/lstmtraining --stop_training --continue_from %s --traineddata %s --model_output %s' %
                         (best_model,
                          pjoin(model_root, model_dir, model_prefix, '%s.traineddata' % model_prefix),
                          pjoin(model_root, model_dir, model_prefix + '.traineddata')))
@@ -93,8 +74,12 @@ def eval_from_file(file_test, file_train, file_config):
     cmd = '\n'.join(cmd_list)
     subprocess.run(cmd, shell=True)
     gt_files = [eval_folder + '/' + ele for ele in os.listdir(eval_folder) if ele.endswith('.gt.txt')]
-    res_str = str(evaluate(gt_files))
-    return res_str
+    res = evaluate(gt_files)
+    res_file = add_eval_report(file_test, file_train, file_config, model_file)
+    print(res_file)
+    with open(pjoin(eval_root, res_file), 'w') as f_:
+        json.dump(res, f_)
+    return res_file
 
 
 
