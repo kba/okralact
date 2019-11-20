@@ -3,22 +3,33 @@ A repository for online OCRD training infrastructure.
 
 ## Setup
 
-```sh
-sudo apt-get install redis
-pip install -r requirements.txt
-```
-
 ### Installation of the Engines
+
 The instructions for installing the engines (Tesseract, kraken, OCRopus, Calamari) are in the folder [install](https://github.com/Doreenruirui/okralact/tree/master/install).
 
 ### Installaton of the Training System
-```
+
+```sh
 $ wget https://github.com/Doreenruirui/okralact/archive/master.zip
 ```
 
 ### Deploy the system on a server
 
-Coming soon.
+The web application is a Python application and uses Redis for managing jobs. To install python and redis:
+
+```sh
+sudo make deps-ubuntu
+# or
+sudo apt-get install python3 redis
+```
+
+Then install the python requirements, ideally [inside a virtualenv](https://packaging.python.org/tutorials/installing-packages/#creating-virtual-environments):
+
+```sh
+make deps
+# or
+pip install -r requirements.txt
+```
 
 ## System Structure
 
